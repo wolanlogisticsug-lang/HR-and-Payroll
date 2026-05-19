@@ -6,14 +6,14 @@
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #1e40af, #2563eb); padding: 32px 40px; text-align: center;">
             <h1 style="color: #fff; margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">
-                AEC Group
+                {{ profile.department.name }}
             </h1>
             <p style="color: #bfdbfe; margin: 6px 0 0; font-size: 13px;">Official Offer Letter</p>
         </div>
 
         <!-- Body -->
         <div style="padding: 36px 40px;">
-            <h2 style="color: #1e40af; margin: 0 0 16px; font-size: 20px;">Welcome to AEC Group!</h2>
+            <h2 style="color: #1e40af; margin: 0 0 16px; font-size: 20px;">Welcome to {{ profile.department.name }}!</h2>
 
             <p style="margin: 0 0 16px;">Dear <strong>{{ profile.user.get_full_name }}</strong>,</p>
 
@@ -37,7 +37,7 @@
                     </tr>
                     {% if probation_duration %}
                     <tr>
-                        <td style="padding: 5px 0; font-size: 14px; color: #64748b;">Probation Duration</td>
+                        <td style="padding: 5px 0; font-size: 14px; color: #64748b;">Duration</td>
                         <td style="padding: 5px 0; font-size: 14px; font-weight: 600; color: #0f172a;">{{ probation_duration }}</td>
                     </tr>
                     {% endif %}
@@ -72,7 +72,7 @@
                    style="display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #059669, #047857);
                           color: #fff; text-decoration: none; border-radius: 10px; font-size: 16px;
                           font-weight: 700; letter-spacing: 0.2px;">
-                    ✓ Accept This Offer
+                    Accept and Confirm
                 </a>
                 <p style="font-size: 12px; color: #94a3b8; margin-top: 12px;">
                     Clicking this button will notify HR of your acceptance and initiate employee onboarding.
@@ -83,7 +83,7 @@
         <!-- Footer -->
         <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px 40px; text-align: center;">
             <p style="margin: 0; font-size: 12px; color: #94a3b8;">
-                Managing Director / Human Resources &nbsp;|&nbsp; AEC Group<br>
+                Managing Director / Human Resources &nbsp;|&nbsp; {{ profile.department.name }}<br>
                 This is an official communication. Do not reply to this email.
             </p>
         </div>

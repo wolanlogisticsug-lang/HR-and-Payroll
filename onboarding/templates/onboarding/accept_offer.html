@@ -6,7 +6,7 @@
     <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
         <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-8 text-center">
             <h1 class="text-3xl font-bold text-white mb-2">Offer Acceptance</h1>
-            <p class="text-emerald-100 text-sm">Please confirm your acceptance of the offer from AEC Group.</p>
+            <p class="text-emerald-100 text-sm">Please confirm your acceptance of the offer from {{ profile.department.name }}.</p>
         </div>
         
         <div class="p-8">
@@ -43,7 +43,7 @@
                 
                 <div class="flex flex-col sm:flex-row gap-4">
                     <button type="submit" class="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition-colors shadow-sm text-center">
-                        ✓ Accept & Confirm
+                        Accept and Confirm
                     </button>
                 </div>
             </form>

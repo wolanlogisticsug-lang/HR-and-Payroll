@@ -23,6 +23,7 @@ urlpatterns = [
     path('staff/<int:profile_id>/', views.staff_detail, name='staff_detail'),
     path('staff/add/', views.add_staff_form, name='add_staff_form'),
     path('staff/<int:profile_id>/assign-manager/', views.assign_manager, name='assign_manager'),
+    path('staff/<int:profile_id>/delete/', views.delete_staff_profile, name='delete_staff_profile'),
     # Candidate Facing
     path('form/<uuid:token>/', views.candidate_onboarding_form, name='candidate_form'),
     path('success/', views.onboarding_success, name='onboarding_success'),

@@ -140,6 +140,8 @@ class EmployeeProfile(models.Model):
         PROBATION = 'PROBATION', 'Probation'
         PERMANENT = 'PERMANENT', 'Permanent'
         TERMINATED = 'TERMINATED', 'Terminated'
+        TRAINEE = 'TRAINEE', 'Trainee'
+        INTERN = 'INTERN', 'Intern'
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,

@@ -102,7 +102,7 @@
                 Reporting Manager
             </h3>
             {% if profile.reporting_manager %}
-            <div class="p-4 rounded-xl bg-violet-50 border border-violet-100 flex items-center gap-3">
+            <div class="p-4 rounded-xl bg-violet-50 border border-violet-100 flex items-center gap-3 mb-4">
                 <div class="w-10 h-10 rounded-lg bg-violet-600 text-white flex items-center justify-center font-bold text-sm">
                     {{ profile.reporting_manager.user.first_name|first|upper }}
                 </div>
@@ -110,14 +110,40 @@
                     <p class="text-xs font-bold text-slate-900">{{ profile.reporting_manager.user.get_full_name }}</p>
                     <p class="text-[10px] text-slate-500 truncate">{{ profile.reporting_manager.designation|default:"Manager" }}</p>
                 </div>
-                
             </div>
             {% else %}
-            <div class="p-4 rounded-xl border border-dashed border-slate-200 text-center">
+            <div class="p-4 rounded-xl border border-dashed border-slate-200 text-center mb-4">
                 <p class="text-xs text-slate-400">No reporting manager assigned.</p>
             </div>
             {% endif %}
+
+            {% if request.user.role == 'HR' or request.user.role == 'MD' %}
+            <form method="post" class="mt-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="assign_manager">
+                <label class="block text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1">
+                    {{ profile.reporting_manager|yesno:"Change,Assign" }} Reporting Manager
+                </label>
+                <div class="flex gap-2">
+                    <select name="reporting_manager_id"
+                            class="flex-1 text-xs border border-slate-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white text-slate-700">
+                        <option value="">— Remove / None —</option>
+                        {% for emp in active_employees %}
+                        <option value="{{ emp.pk }}"
+                            {% if profile.reporting_manager and profile.reporting_manager.pk == emp.pk %}selected{% endif %}>
+                            {{ emp.user.get_full_name }} ({{ emp.designation|default:emp.employee_id }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit"
+                            class="px-3 py-2 bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold rounded-lg transition">
+                        Save
+                    </button>
+                </div>
+            </form>
+            {% endif %}
         </div>
+
     </div>
 
     <!-- RIGHT COLUMN: Professional Details & Stats -->

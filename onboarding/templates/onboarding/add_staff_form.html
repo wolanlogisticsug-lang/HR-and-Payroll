@@ -92,10 +92,11 @@
                             </svg>
                         </div>
                         <div class="flex-1">
-                            <input type="file" name="profile_picture" id="profile_picture" accept="image/*"
-                                   class="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer">
-                            <p class="text-xs text-slate-400 mt-1">JPG, PNG or WEBP — max 5MB. Used as the employee's avatar across the system.</p>
-                        </div>
+                             <input type="file" name="profile_picture" id="profile_picture" accept="image/*"
+                                    class="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer">
+                             <p class="text-xs text-slate-400 mt-1">JPG, PNG or WEBP — max 2MB. This will be your official profile photo in the app.</p>
+                             <p id="photo-size-error" class="hidden text-xs text-red-600 font-medium mt-1">⚠ Photo size should be below 2MB. Please choose a smaller file.</p>
+                         </div>
                     </div>
                 </div>
             </div>
@@ -180,64 +181,126 @@
             </div>
         </div>
 
-        <!-- SECTION 4: Bank Details -->
+        <!-- SECTION 4: Personal Bank Account Details -->
         <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
             <h2 class="text-base font-bold text-slate-800 mb-5 flex items-center gap-2">
                 <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs flex items-center justify-center font-bold">4</span>
-                Bank Details
+                Personal Bank Account Details
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Personal Bank Account No.</label>
-                    <input type="text" name="personal_account" value="{{ post.personal_account }}"
-                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Bank Name</label>
+                    <input type="text" name="personal_bank_name" value="{{ post.personal_bank_name }}" placeholder="e.g. State Bank of India"
+                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Salary Bank Account No.</label>
-                    <input type="text" name="salary_account" value="{{ post.salary_account }}"
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Branch Name</label>
+                    <input type="text" name="personal_branch_name" value="{{ post.personal_branch_name }}" placeholder="e.g. MG Road Branch"
+                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">IFSC Code</label>
+                    <input type="text" name="personal_ifsc" value="{{ post.personal_ifsc }}" placeholder="SBIN0001234"
+                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Account Number</label>
+                    <input type="text" name="personal_account" value="{{ post.personal_account }}"
                            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent">
                 </div>
             </div>
         </div>
 
-        <!-- SECTION 5: Assignment & Reporting -->
+        <!-- SECTION 5: Salary Bank Account Details -->
+        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+            <h2 class="text-base font-bold text-slate-800 mb-5 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-teal-100 text-teal-700 text-xs flex items-center justify-center font-bold">5</span>
+                Salary Bank Account Details
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Bank Name</label>
+                    <input type="text" name="salary_bank_name" value="{{ post.salary_bank_name }}" placeholder="e.g. HDFC Bank"
+                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Branch Name</label>
+                    <input type="text" name="salary_branch_name" value="{{ post.salary_branch_name }}" placeholder="e.g. Anna Nagar Branch"
+                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">IFSC Code</label>
+                    <input type="text" name="salary_ifsc" value="{{ post.salary_ifsc }}" placeholder="HDFC0001234"
+                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Account Number</label>
+                    <input type="text" name="salary_account" value="{{ post.salary_account }}"
+                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent">
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: Document Vault -->
         <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
             <h2 class="text-base font-bold text-slate-800 mb-1 flex items-center gap-2">
-                <span class="w-6 h-6 rounded-full bg-violet-100 text-violet-700 text-xs flex items-center justify-center font-bold">5</span>
-                Assignment &amp; Reporting
+                <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs flex items-center justify-center font-bold">5</span>
+                Document Vault
             </h2>
-            <p class="text-xs text-slate-500 mb-5">Select the Reporting Manager responsible for this employee's leave approvals and performance reviews. Any active staff member can be assigned, regardless of their title.</p>
+            <p class="text-xs text-slate-500 mb-5 ml-8">Upload all relevant certificates. Fields marked <span class="text-red-500 font-bold">*</span> are mandatory.</p>
 
-            <input type="hidden" name="reporting_manager_id" id="reporting_manager_id" value="">
-
-            <!-- Search box -->
-            <div class="relative max-w-md" id="manager-search-wrap">
-                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Reporting Manager</label>
-                <div class="relative">
-                    <input type="text" id="manager-search-input" autocomplete="off"
-                           placeholder="Search by name or designation…"
-                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm pr-10 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent">
-                    <span id="manager-clear-btn" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 cursor-pointer hidden text-base leading-none">✕</span>
+            <!-- Mandatory -->
+            <div class="mb-6">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Mandatory Documents</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">ID Proof (Aadhaar / PAN) <span class="text-red-500">*</span></label>
+                        <input type="file" name="id_proof" class="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Highest Academic Certificate <span class="text-red-500">*</span></label>
+                        <input type="file" name="academic_doc" class="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer">
+                    </div>
                 </div>
-
-                <!-- Selected preview badge -->
-                <div id="manager-selected-badge" class="hidden mt-2 inline-flex items-center gap-2 bg-violet-50 border border-violet-200 rounded-full px-3 py-1 text-xs font-medium text-violet-800">
-                    <span id="manager-selected-name"></span>
-                    <span class="text-violet-400">·</span>
-                    <span id="manager-selected-desig" class="text-violet-600"></span>
-                </div>
-
-                <!-- Dropdown -->
-                <ul id="manager-dropdown"
-                    class="hidden absolute z-20 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg max-h-56 overflow-y-auto text-sm">
-                </ul>
-                <p id="manager-error" class="hidden mt-1 text-xs text-red-600 font-medium"></p>
             </div>
 
-            <!-- Hidden employee data for JS -->
-            <script id="employee-data" type="application/json">
-            [{% for emp in active_employees %}{"id":{{ emp.pk }},"name":"{{ emp.user.get_full_name|escapejs }}","desig":"{{ emp.designation|escapejs }}","dept":"{{ emp.department.name|escapejs }}","emp_id":"{{ emp.employee_id|escapejs }}"}{% if not forloop.last %},{% endif %}{% endfor %}]
-            </script>
+            <!-- Educational Certificates (Optional) -->
+            <div class="mb-6">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Educational Certificates <span class="text-slate-400 font-normal normal-case">(Optional)</span></h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">10th Class Certificate</label>
+                        <input type="file" name="certificate_10th" class="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-50 file:text-slate-700 hover:file:bg-slate-100 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">+2 / 12th Certificate</label>
+                        <input type="file" name="certificate_12th" class="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-50 file:text-slate-700 hover:file:bg-slate-100 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Degree Certificate</label>
+                        <input type="file" name="certificate_degree" class="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-50 file:text-slate-700 hover:file:bg-slate-100 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Other Certificates</label>
+                        <input type="file" name="other_certificates" class="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-50 file:text-slate-700 hover:file:bg-slate-100 cursor-pointer">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Work Experience (Optional) -->
+            <div>
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Work Experience <span class="text-slate-400 font-normal normal-case">(Optional)</span></h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Experience Letter</label>
+                        <input type="file" name="exp_letter" class="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-50 file:text-slate-700 hover:file:bg-slate-100 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Previous Salary Slips</label>
+                        <input type="file" name="salary_slips" class="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-50 file:text-slate-700 hover:file:bg-slate-100 cursor-pointer">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Action buttons -->
@@ -256,95 +319,37 @@
 
 <script>
 (function () {
-    const employees = JSON.parse(document.getElementById('employee-data').textContent);
-    const input     = document.getElementById('manager-search-input');
-    const dropdown  = document.getElementById('manager-dropdown');
-    const hiddenId  = document.getElementById('reporting_manager_id');
-    const badge     = document.getElementById('manager-selected-badge');
-    const badgeName = document.getElementById('manager-selected-name');
-    const badgeDesig= document.getElementById('manager-selected-desig');
-    const clearBtn  = document.getElementById('manager-clear-btn');
-    const errEl     = document.getElementById('manager-error');
+    // Profile Photo 2MB validation + preview
+    const MAX_BYTES = 2 * 1024 * 1024;
+    const photoInput = document.getElementById('profile_picture');
+    const sizeError = document.getElementById('photo-size-error');
+    const submitBtn = document.querySelector('button[type="submit"]');
 
-    function showDropdown(q) {
-        const q2 = q.toLowerCase();
-        const matches = employees.filter(e =>
-            e.name.toLowerCase().includes(q2) ||
-            (e.desig && e.desig.toLowerCase().includes(q2)) ||
-            (e.emp_id && e.emp_id.toLowerCase().includes(q2))
-        ).slice(0, 10);
+    if (photoInput) {
+        photoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
-        dropdown.innerHTML = '';
-        if (!matches.length) {
-            dropdown.innerHTML = '<li class="px-4 py-3 text-slate-400 text-xs">No matching employees found</li>';
-        } else {
-            matches.forEach(e => {
-                const li = document.createElement('li');
-                li.className = 'flex items-center justify-between px-4 py-2.5 hover:bg-violet-50 cursor-pointer transition';
-                li.innerHTML = `
-                    <div>
-                        <p class="font-medium text-slate-800">${e.name}</p>
-                        <p class="text-xs text-slate-500">${e.desig || '—'} · ${e.dept}</p>
-                    </div>
-                    <span class="text-xs text-slate-400 font-mono">${e.emp_id}</span>`;
-                li.addEventListener('click', () => selectEmployee(e));
-                dropdown.appendChild(li);
-            });
-        }
-        dropdown.classList.remove('hidden');
-    }
+            if (file.size > MAX_BYTES) {
+                sizeError.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                sizeError.classList.add('hidden');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
 
-    function selectEmployee(e) {
-        hiddenId.value   = e.id;
-        input.value      = e.name;
-        badgeName.textContent  = e.name;
-        badgeDesig.textContent = e.desig || e.dept;
-        badge.classList.remove('hidden');
-        clearBtn.classList.remove('hidden');
-        dropdown.classList.add('hidden');
-        errEl.classList.add('hidden');
-    }
-
-    function clearSelection() {
-        hiddenId.value = '';
-        input.value    = '';
-        badge.classList.add('hidden');
-        clearBtn.classList.add('hidden');
-        errEl.classList.add('hidden');
-    }
-
-    input.addEventListener('input', () => {
-        const q = input.value.trim();
-        if (q.length >= 1) showDropdown(q);
-        else dropdown.classList.add('hidden');
-        if (!q) clearSelection();
-    });
-
-    input.addEventListener('focus', () => {
-        if (input.value.trim().length >= 1) showDropdown(input.value.trim());
-    });
-
-    clearBtn.addEventListener('click', clearSelection);
-
-    document.addEventListener('click', (ev) => {
-        if (!document.getElementById('manager-search-wrap').contains(ev.target)) {
-            dropdown.classList.add('hidden');
-        }
-    });
-    // Profile Photo Preview
-    document.getElementById('profile_picture').addEventListener('change', function(e) {
-        const preview = document.getElementById('photo-preview');
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                preview.innerHTML = `<img src="${event.target.result}" class="w-full h-full object-cover">`;
-                preview.classList.remove('border-dashed', 'text-slate-400');
-                preview.classList.add('border-solid', 'border-violet-200');
+                const preview = document.getElementById('photo-preview');
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    preview.innerHTML = `<img src="${event.target.result}" class="w-full h-full object-cover">`;
+                    preview.classList.remove('border-dashed', 'text-slate-400');
+                    preview.classList.add('border-solid', 'border-violet-200');
+                }
+                reader.readAsDataURL(file);
             }
-            reader.readAsDataURL(file);
-        }
-    });
+        });
+    }
 })();
 </script>
 {% endblock %}

@@ -42,42 +42,7 @@ def setup_owner(request):
     return render(request, 'registration/setup.html')
 
 def signup(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        re_password = request.POST.get('re_password')
-        email = request.POST.get('email')
-        role = request.POST.get('role')
-        
-        if password != re_password:
-            return render(request, 'registration/signup.html', {'error': 'Passwords do not match.', 'roles': User.Role.choices})
-            
-        if username and password and email and role:
-            if User.objects.filter(username=username).exists():
-                return render(request, 'registration/signup.html', {'error': 'Username already taken.', 'roles': User.Role.choices})
-                
-            user = User.objects.create_user(
-                username=username,
-                password=password,
-                email=email,
-                role=role
-            )
-            
-            # Default fallback department to avoid profile crashes
-            dept = Department.objects.first()
-            if not dept:
-                dept = Department.objects.create(name='General', code='GEN', is_active=True)
-            
-            EmployeeProfile.objects.create(
-                user=user,
-                department=dept,
-                probation_status=EmployeeProfile.ProbationStatus.PROBATION
-            )
-            
-            login(request, user)
-            return redirect('dashboard')
-            
-    return render(request, 'registration/signup.html', {'roles': User.Role.choices})
+    return redirect('login')
 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages

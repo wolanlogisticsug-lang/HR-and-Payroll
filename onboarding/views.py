@@ -209,14 +209,47 @@ def accept_offer(request, profile_id):
 @login_required
 @user_passes_test(is_hr_or_md)
 def add_new_staff(request, profile_id):
-    from core.models import EmployeeProfile
+    from core.models import EmployeeProfile, User
+    import uuid
+    import re
     profile = get_object_or_404(EmployeeProfile, id=profile_id)
     if request.method == 'POST':
+        # Generate unique Employee ID
+        dept_code = profile.department.code if profile.department and profile.department.code else "GEN"
+        employee_id = f"AEC-{dept_code}-{uuid.uuid4().hex[:6].upper()}"
+        
+        # Username: the employee's name (lowercase, spaces replaced by underscore, unique)
+        name_str = f"{profile.user.first_name}_{profile.user.last_name}"
+        username = re.sub(r'[^a-zA-Z0-9_]', '', name_str.replace(' ', '_')).lower()
+        
+        original_username = username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{original_username}{counter}"
+            counter += 1
+            
+        # Set employee credentials
+        profile.employee_id = employee_id
         profile.is_active = True
+        profile.onboarding_status = 'COMPLETED'
+        profile.save()
+        
+        profile.user.username = username
+        profile.user.set_password(employee_id)
         profile.user.is_active = True
         profile.user.save()
-        profile.save()
-        messages.success(request, f"{profile.user.get_full_name()} has been added as a new staff member.")
+        
+        # Save credentials in session so dashboard can display a nice copyable popup/banner
+        request.session['new_staff_creds'] = {
+            'name': profile.user.get_full_name(),  # Proper "First Last" with spaces
+            'username': username,
+            'password': employee_id,
+            'dept': profile.department.name,
+            'pos': profile.designation
+        }
+        
+        messages.success(request, f"Successfully activated {profile.user.get_full_name()} as a new employee!")
+        
     return redirect('onboarding:onboarding_dashboard')
 
 @login_required
@@ -237,55 +270,76 @@ def unlock_profile(request, profile_id):
 
 def candidate_onboarding_form(request, token):
     candidate = get_object_or_404(InviteToken, id=token)
-    
+
     # Block resubmission - once used, no editing allowed
     if candidate.is_used:
         return render(request, 'onboarding/already_submitted.html', {'candidate': candidate})
-    
+
     if request.method == 'POST':
         form = CandidateOnboardingForm(request.POST, request.FILES)
         if form.is_valid():
             data = form.cleaned_data
             from core.models import User, EmployeeProfile
             from django.core.files.storage import default_storage
-            import uuid
-            
-            username = candidate.email.split('@')[0]
-            base_username = username
+            import uuid, re
+
+            # ── Credential generation: name-based username (matches add_new_staff logic) ──
+            first = data['first_name'].strip()
+            last  = data['last_name'].strip()
+            name_str = f"{first}_{last}"
+            base_username = re.sub(r'[^a-zA-Z0-9_]', '', name_str.replace(' ', '_')).lower()
+            username = base_username
             counter = 1
             while User.objects.filter(username=username).exists():
                 username = f"{base_username}{counter}"
                 counter += 1
-                
+
             user = User.objects.create(
                 username=username,
                 email=candidate.email,
-                first_name=data['first_name'],
-                last_name=data['last_name'],
+                first_name=first,
+                last_name=last,
                 phone=data['phone'],
                 profile_picture=data['profile_pic'],
                 date_of_birth=data.get('date_of_birth'),
                 is_active=False
             )
+            # Temporary password — will be replaced by Employee ID once HR activates
             user.set_password(str(uuid.uuid4()))
             user.save()
 
             docs_vault = {}
-            # Vault items that are files
-            for doc_field in ['academic_doc', 'id_proof', 'exp_letter', 'salary_slips']:
+            all_doc_fields = [
+                'id_proof', 'academic_doc',
+                'certificate_10th', 'certificate_12th', 'certificate_degree',
+                'other_certificates', 'exp_letter', 'salary_slips',
+            ]
+            for doc_field in all_doc_fields:
                 file_obj = data.get(doc_field)
                 if file_obj:
                     path = default_storage.save(f"vault/{user.username}/{file_obj.name}", file_obj)
-                    docs_vault[doc_field] = {
-                        'url': default_storage.url(path),
-                        'verified': False
-                    }
-            
-            # Vault items that are JSON details
+                    docs_vault[doc_field] = {'url': default_storage.url(path), 'verified': False}
+
+            # Bank details stored as split personal/salary JSON
+            docs_vault['bank_details'] = {
+                'personal': {
+                    'bank_name':   data.get('personal_bank_name', ''),
+                    'branch_name': data.get('personal_branch_name', ''),
+                    'ifsc_code':   data.get('personal_ifsc', '').upper(),
+                    'account':     data.get('personal_account', ''),
+                },
+                'salary': {
+                    'bank_name':   data.get('salary_bank_name', ''),
+                    'branch_name': data.get('salary_branch_name', ''),
+                    'ifsc_code':   data.get('salary_ifsc', '').upper(),
+                    'account':     data.get('salary_account', ''),
+                },
+            }
+
             docs_vault['emergency_contact'] = {
-                'name': data.get('emergency_contact_name', ''),
+                'name':         data.get('emergency_contact_name', ''),
                 'relationship': data.get('emergency_contact_rel', ''),
-                'phone': data.get('emergency_contact_phone', ''),
+                'phone':        data.get('emergency_contact_phone', ''),
             }
             if data.get('pan_number'):
                 docs_vault['pan'] = data.get('pan_number').upper()
@@ -298,10 +352,10 @@ def candidate_onboarding_form(request, token):
                 address=data.get('address', ''),
                 personal_account=data.get('personal_account', ''),
                 salary_account=data.get('salary_account', ''),
-                aadhaar_masked='X'*8 + data['aadhaar'][-4:] if len(data['aadhaar']) >= 4 else '',
+                aadhaar_masked='X' * 8 + data['aadhaar'][-4:] if len(data['aadhaar']) >= 4 else '',
                 emergency_contact=data.get('emergency_contact_phone', '')[:15],
                 docs_vault=docs_vault,
-                is_locked=True,   # Immediately lock after submission
+                is_locked=True,
                 is_active=False
             )
 
@@ -311,7 +365,7 @@ def candidate_onboarding_form(request, token):
             return redirect('onboarding:onboarding_success')
     else:
         form = CandidateOnboardingForm()
-    return render(request, 'onboarding/candidate_form.html', {'form': form, 'candidate': candidate})
+    return render(request, 'onboarding/candidate_form.html', {'form': form, 'candidate': candidate, 'invite': candidate})
 
 def onboarding_success(request):
     return render(request, 'onboarding/success.html')
@@ -320,6 +374,8 @@ def onboarding_success(request):
 @user_passes_test(is_hr_or_md)
 def onboarding_dashboard(request):
     from core.models import EmployeeProfile
+
+    new_staff_creds = request.session.pop('new_staff_creds', None)
 
     verified_candidates = EmployeeProfile.objects.filter(onboarding_status__in=['VERIFIED', 'ACCEPTED']).select_related('user', 'department')
     rejected_candidates = EmployeeProfile.objects.filter(onboarding_status='REJECTED').select_related('user', 'department')
@@ -357,6 +413,7 @@ def onboarding_dashboard(request):
         'permanent_staff': permanent_staff,
         'terminated_staff': terminated_staff,
         'probation_alerts': probation_alerts,
+        'new_staff_creds': new_staff_creds,
     })
 
 @login_required
@@ -391,24 +448,13 @@ def mail_center_duplicate(request):
     pass
 
 
-@login_required
-@user_passes_test(is_hr_or_md)
-def add_new_staff(request, profile_id):
-    from core.models import EmployeeProfile
-    profile = get_object_or_404(EmployeeProfile, id=profile_id)
-    if request.method == 'POST':
-        profile.is_active = True
-        profile.onboarding_status = 'COMPLETED'
-        profile.user.is_active = True
-        profile.user.save()
-        profile.save()
-        messages.success(request, f"{profile.user.get_full_name()} has been successfully saved as an Employee!")
-    return redirect('onboarding:onboarding_dashboard')
+
 
 
 @login_required
 def staff_directory(request):
     from core.models import Department, EmployeeProfile, User
+    new_staff_creds = request.session.pop('new_staff_creds', None)
     # Exclude HQ department
     departments = Department.objects.filter(is_active=True).exclude(code='HQ').order_by('name')
     staff_by_department = []
@@ -423,7 +469,7 @@ def staff_directory(request):
         permanent   = list(profiles.filter(probation_status='PERMANENT', is_active=True))
         terminated  = list(profiles.filter(probation_status='TERMINATED'))
         total = len(probation) + len(permanent) + len(terminated)
-        
+
         # Always append department even if total == 0 to show all departments
         staff_by_department.append({
             'department':        dept,
@@ -445,13 +491,14 @@ def staff_directory(request):
         'total_probation':  total_probation,
         'total_terminated': total_terminated,
         'active_employees': EmployeeProfile.objects.filter(is_active=True).exclude(user__role=User.Role.MD).select_related('user').order_by('user__first_name'),
+        'new_staff_creds':  new_staff_creds,
     })
 
 
 @login_required
 @user_passes_test(is_hr_or_md)
 def add_staff_form(request):
-    from core.models import Department, EmployeeProfile
+    from core.models import Department, EmployeeProfile, User as _User
     import uuid as _uuid
 
     departments = Department.objects.filter(is_active=True).order_by('name')
@@ -473,11 +520,18 @@ def add_staff_form(request):
         probation_status = request.POST.get('probation_status', 'PROBATION')
         address          = request.POST.get('address', '').strip()
         aadhaar_masked   = request.POST.get('aadhaar_masked', '').strip()
-        emergency_contact_name = request.POST.get('emergency_contact_name', '').strip()
-        emergency_contact_rel  = request.POST.get('emergency_contact_rel', '').strip()
-        emergency_contact_phone= request.POST.get('emergency_contact_phone', '').strip()
-        personal_account = request.POST.get('personal_account', '').strip()
-        salary_account   = request.POST.get('salary_account', '').strip()
+        emergency_contact_name  = request.POST.get('emergency_contact_name', '').strip()
+        emergency_contact_rel   = request.POST.get('emergency_contact_rel', '').strip()
+        emergency_contact_phone = request.POST.get('emergency_contact_phone', '').strip()
+        # Bank fields — split into personal and salary
+        personal_bank_name = request.POST.get('personal_bank_name', '').strip()
+        personal_branch_name = request.POST.get('personal_branch_name', '').strip()
+        personal_ifsc      = request.POST.get('personal_ifsc', '').strip().upper()
+        personal_account   = request.POST.get('personal_account', '').strip()
+        salary_bank_name   = request.POST.get('salary_bank_name', '').strip()
+        salary_branch_name = request.POST.get('salary_branch_name', '').strip()
+        salary_ifsc        = request.POST.get('salary_ifsc', '').strip().upper()
+        salary_account     = request.POST.get('salary_account', '').strip()
 
         if not (first_name and last_name and email and dept_id):
             messages.error(request, 'First name, last name, email and department are required.')
@@ -485,19 +539,27 @@ def add_staff_form(request):
                 'departments': departments, 'post': request.POST,
             })
 
-        # Build username from email
-        base_uname = email.split('@')[0]
+        # Generate Employee ID (used as initial password)
+        dept = Department.objects.get(pk=dept_id)
+        employee_id = f"AEC-{dept.code}-{_uuid.uuid4().hex[:6].upper()}"
+
+        # Username = name-based (e.g. athira_athira) — readable & memorable
+        import re as _re
+        name_str = f"{first_name}_{last_name}"
+        base_uname = _re.sub(r'[^a-zA-Z0-9_]', '', name_str.replace(' ', '_')).lower()
         uname = base_uname
         counter = 1
-        from core.models import User as _User
         while _User.objects.filter(username=uname).exists():
-            uname = f"{base_uname}{counter}"; counter += 1
+            uname = f"{base_uname}{counter}"
+            counter += 1
 
         user = _User.objects.create_user(
-            username=uname, email=email, password=_uuid.uuid4().hex,
+            username=uname, email=email,
             first_name=first_name, last_name=last_name,
             phone=phone, role='STAFF', is_active=True,
         )
+        # Initial password = Employee ID
+        user.set_password(employee_id)
         if dob:
             user.date_of_birth = dob
         photo = request.FILES.get('profile_picture')
@@ -505,9 +567,7 @@ def add_staff_form(request):
             user.profile_picture = photo
         user.save()
 
-        dept = Department.objects.get(pk=dept_id)
-
-        # docs_vault stores full emergency contact details
+        # docs_vault stores full emergency contact details + bank details + certificates
         vault = {}
         if emergency_contact_name:
             vault['emergency_contact'] = {
@@ -516,23 +576,36 @@ def add_staff_form(request):
                 'phone':        emergency_contact_phone,
             }
 
-        # Reporting manager (optional) — with circular-chain guard
-        reporting_manager_id = request.POST.get('reporting_manager_id') or None
+        vault['bank_details'] = {
+            'personal': {
+                'bank_name':    personal_bank_name,
+                'branch_name':  personal_branch_name,
+                'ifsc_code':    personal_ifsc,
+                'account':      personal_account,
+            },
+            'salary': {
+                'bank_name':    salary_bank_name,
+                'branch_name':  salary_branch_name,
+                'ifsc_code':    salary_ifsc,
+                'account':      salary_account,
+            },
+        }
+
+        # File-based certificates
+        from django.core.files.storage import default_storage as _ds
+        cert_fields = [
+            'id_proof', 'academic_doc',
+            'certificate_10th', 'certificate_12th', 'certificate_degree',
+            'other_certificates', 'exp_letter', 'salary_slips',
+        ]
+        for cf in cert_fields:
+            file_obj = request.FILES.get(cf)
+            if file_obj:
+                fpath = _ds.save(f"vault/{uname}/{file_obj.name}", file_obj)
+                vault[cf] = {'url': _ds.url(fpath), 'verified': False}
+
+        # No reporting_manager set at creation time — HR assigns from Staff Profile page
         reporting_manager = None
-        if reporting_manager_id:
-            try:
-                candidate_mgr = EmployeeProfile.objects.get(pk=reporting_manager_id, is_active=True)
-                # Walk up the chain to detect circular references
-                # (new employee has no profile yet, so only need to check if
-                #  the chosen manager's own chain loops — not possible for a brand-new hire)
-                reporting_manager = candidate_mgr
-            except EmployeeProfile.DoesNotExist:
-                messages.error(request, 'Selected reporting manager not found.')
-                return render(request, 'onboarding/add_staff_form.html', {
-                    'departments': departments,
-                    'active_employees': EmployeeProfile.objects.filter(is_active=True).select_related('user').order_by('user__first_name'),
-                    'post': request.POST,
-                })
 
         profile = EmployeeProfile(
             user=user, department=dept,
@@ -550,15 +623,25 @@ def add_staff_form(request):
             is_active=True,
             reporting_manager=reporting_manager,
         )
-        profile.employee_id = f"AEC-{dept.code}-{_uuid.uuid4().hex[:6].upper()}"
+        profile.employee_id = employee_id
         profile.save()
 
-        messages.success(request, f"{user.get_full_name()} added successfully (ID: {profile.employee_id}).")
+        # Store credentials in session for HR to see and copy
+        # Display name uses proper spaces "First Last"
+        display_name = f"{first_name} {last_name}"
+        request.session['new_staff_creds'] = {
+            'name':     display_name,
+            'username': uname,        # Login ID = name-based username (e.g. athira_athira)
+            'password': employee_id,  # Password = Employee ID
+            'dept':     dept.name,
+            'pos':      designation,
+        }
+
+        messages.success(request, f"{user.get_full_name()} added successfully (ID: {employee_id}).")
         return redirect('onboarding:staff_directory')
 
     return render(request, 'onboarding/add_staff_form.html', {
         'departments': departments,
-        'active_employees': EmployeeProfile.objects.filter(is_active=True).select_related('user').order_by('user__first_name'),
     })
 
 
@@ -620,6 +703,41 @@ def assign_manager(request, profile_id):
 
 
 @login_required
+@user_passes_test(is_hr_or_md)
+def delete_staff_profile(request, profile_id):
+    """
+    HR/MD only: permanently delete a staff profile and their user account.
+    Requires a POST with confirm=yes to prevent accidental deletion.
+    """
+    from core.models import EmployeeProfile
+    profile = get_object_or_404(EmployeeProfile, pk=profile_id)
+
+    # Prevent deleting the currently logged-in user
+    if profile.user == request.user:
+        messages.error(request, "You cannot delete your own account.")
+        return redirect('onboarding:staff_directory')
+
+    if request.method == 'POST' and request.POST.get('confirm') == 'yes':
+        full_name = profile.user.get_full_name()
+        emp_id    = profile.employee_id
+
+        # Delete user (cascades to profile via OneToOne if set up that way)
+        user = profile.user
+        profile.delete()
+        try:
+            user.delete()
+        except Exception:
+            pass  # already cascaded
+
+        messages.success(request, f"✅ {full_name} ({emp_id}) has been permanently removed from the system.")
+        return redirect('onboarding:staff_directory')
+
+    # Any other method → redirect without action
+    messages.error(request, "Invalid delete request.")
+    return redirect('onboarding:staff_directory')
+
+
+@login_required
 def staff_detail(request, profile_id=None):
     """Full profile detail page for any employee."""
     from core.models import EmployeeProfile, Attendance, LeaveRequest
@@ -627,17 +745,13 @@ def staff_detail(request, profile_id=None):
     from datetime import date
 
     if request.user.role == 'STAFF':
-        # Staff role is strictly restricted to viewing their own best profile
-        from django.db.models import F
+        # Fetch profile strictly by the logged-in user object — NEVER by email
+        # (email-based lookup causes wrong profile if multiple accounts share an email)
         profile = EmployeeProfile.objects.filter(
-            user__email=request.user.email
+            user=request.user
         ).select_related(
             'user', 'department', 'reporting_manager__user'
-        ).order_by(
-            F('date_of_joining').desc(nulls_last=True), 
-            F('designation').desc(nulls_last=True),
-            '-id'
-        ).first()
+        ).order_by('-id').first()
         if not profile:
             raise Http404("No employee profile found for your account.")
     elif profile_id:
@@ -649,17 +763,13 @@ def staff_detail(request, profile_id=None):
             pk=profile_id,
         )
     else:
-        # Fallback for HR/MD if no ID provided
-        from django.db.models import F
+        # Fallback for HR/MD viewing their own profile (no profile_id given)
+        # Also use exact user match — not email
         profile = EmployeeProfile.objects.filter(
-            user__email=request.user.email
+            user=request.user
         ).select_related(
             'user', 'department', 'reporting_manager__user'
-        ).order_by(
-            F('date_of_joining').desc(nulls_last=True),
-            F('designation').desc(nulls_last=True),
-            '-id'
-        ).first()
+        ).order_by('-id').first()
         if not profile:
             raise Http404("No employee profile found for this account.")
 
@@ -754,6 +864,29 @@ def staff_detail(request, profile_id=None):
             return redirect('onboarding:my_profile')
         return redirect('onboarding:staff_detail', profile_id=profile.id)
 
+    if request.method == 'POST' and request.POST.get('action') == 'assign_manager':
+        if request.user.role not in ('HR', 'MD'):
+            messages.error(request, "Only HR can assign a reporting manager.")
+            return redirect('onboarding:staff_detail', profile_id=profile.id)
+        from core.models import EmployeeProfile as _EP
+        mgr_id = request.POST.get('reporting_manager_id', '').strip()
+        if mgr_id:
+            try:
+                new_mgr = _EP.objects.get(pk=mgr_id, is_active=True)
+                if new_mgr.pk == profile.pk:
+                    messages.error(request, "An employee cannot report to themselves.")
+                else:
+                    profile.reporting_manager = new_mgr
+                    profile.save()
+                    messages.success(request, f"Reporting manager set to {new_mgr.user.get_full_name()}.")
+            except _EP.DoesNotExist:
+                messages.error(request, "Selected manager not found.")
+        else:
+            profile.reporting_manager = None
+            profile.save()
+            messages.success(request, "Reporting manager removed.")
+        return redirect('onboarding:staff_detail', profile_id=profile.id)
+
     today = date.today()
 
     # Last 5 attendance records
@@ -773,6 +906,9 @@ def staff_detail(request, profile_id=None):
     vault = profile.docs_vault or {}
     emergency = vault.get('emergency_contact', {})
 
+    from core.models import EmployeeProfile as _EP2, User as _U2
+    active_employees = _EP2.objects.filter(is_active=True).exclude(pk=profile.pk).select_related('user').order_by('user__first_name')
+
     return render(request, 'onboarding/staff_detail.html', {
         'profile': profile,
         'recent_attendance': recent_attendance,
@@ -781,4 +917,5 @@ def staff_detail(request, profile_id=None):
         'emergency': emergency,
         'vault': vault,
         'today': today,
+        'active_employees': active_employees,
     })

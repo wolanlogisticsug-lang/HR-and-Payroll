@@ -3,9 +3,27 @@
 {% block title %}HR Verification - AEC Group{% endblock %}
 
 {% block content %}
-<div class="mb-8">
-    <h1 class="text-2xl font-bold text-slate-900">Pending HR Verifications</h1>
-    <p class="text-slate-500 text-sm mt-1">Review candidate documents and issue Official Joining Letters.</p>
+<div class="mb-8 flex items-start justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-900">Pending HR Verifications</h1>
+        <p class="text-slate-500 text-sm mt-1">Review candidate documents and issue Official Joining Letters.</p>
+    </div>
+    <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-xs font-semibold text-emerald-700">Live</span>
+        <span id="pending-count-badge" class="ml-1 text-xs text-emerald-600">{{ profiles.count }} pending</span>
+    </div>
+</div>
+
+<!-- New submission toast -->
+<div id="new-submission-toast"
+     class="hidden fixed top-5 right-5 z-50 bg-blue-600 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-lg flex items-center gap-3 transition">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+    </svg>
+    <span>New candidate submission! </span>
+    <button onclick="location.reload()" class="underline text-blue-100 hover:text-white ml-1">Refresh now</button>
+    <button onclick="document.getElementById('new-submission-toast').classList.add('hidden')" class="ml-2 text-blue-200 hover:text-white">&times;</button>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -68,7 +86,7 @@
                 <input type="hidden" name="profile_id" value="{{ profile.id }}">
                 <input type="hidden" name="action" value="confirm">
                 <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all">
-                    Verify & Send PDF
+                    Verify and Send Offer Letter
                 </button>
             </form>
         </div>
@@ -124,4 +142,40 @@
     </div>
 </div>
 {% endif %}
+
+<script>
+(function () {
+    let knownCount = {{ profiles.count }};
+    const POLL_MS = 25000; // poll every 25 seconds
+
+    async function checkForNewSubmissions() {
+        try {
+            const resp = await fetch(window.location.href, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const html = await resp.text();
+            // Parse the pending count from the returned page
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const badge = doc.getElementById('pending-count-badge');
+            if (badge) {
+                const match = badge.textContent.match(/(\d+)/);
+                if (match) {
+                    const newCount = parseInt(match[1], 10);
+                    document.getElementById('pending-count-badge').textContent = newCount + ' pending';
+                    if (newCount > knownCount) {
+                        // New submissions arrived — show toast
+                        document.getElementById('new-submission-toast').classList.remove('hidden');
+                    }
+                    knownCount = newCount;
+                }
+            }
+        } catch (e) {
+            // Silently ignore network errors
+        }
+    }
+
+    setInterval(checkForNewSubmissions, POLL_MS);
+})();
+</script>
 {% endblock %}

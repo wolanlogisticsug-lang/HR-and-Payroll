@@ -23,17 +23,17 @@
     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="bg-slate-50 border-b border-slate-200 p-4">
             <p class="text-sm text-slate-500"><span class="font-medium text-slate-700">To:</span> {{ profile.user.email }}</p>
-            <p class="text-sm text-slate-500 mt-1"><span class="font-medium text-slate-700">Subject:</span> AEC Group - Official Appointment Letter</p>
+            <p class="text-sm text-slate-500 mt-1"><span class="font-medium text-slate-700">Subject:</span> {{ profile.department.name }} - Official Appointment Letter</p>
         </div>
         <div class="p-8">
-            <h2 class="text-xl font-bold text-blue-600 mb-4">Welcome to AEC Group!</h2>
+            <h2 class="text-xl font-bold text-blue-600 mb-4">Welcome to {{ profile.department.name }}!</h2>
             <p class="text-slate-800 mb-4">Dear <strong>{{ profile.user.get_full_name }}</strong>,</p>
             <p class="text-slate-800 mb-4">Following the successful verification of your onboarding documents, we are thrilled to officially offer you the position of <strong>{{ profile.designation }}</strong> within the <strong>{{ profile.department.name }}</strong> department.</p>
             
             <h3 class="font-bold text-slate-900 mt-6 mb-2">Employment Details:</h3>
             <ul class="list-disc list-inside text-slate-800 space-y-1 mb-6">
                 <li><strong>Employment Type:</strong> {{ profile.get_probation_status_display }}</li>
-                {% if probation_duration %}<li><strong>Probation Duration:</strong> {{ probation_duration }}</li>{% endif %}
+                {% if probation_duration %}<li><strong>Duration:</strong> {{ probation_duration }}</li>{% endif %}
                 <li><strong>Monthly Base Salary:</strong> ₹{{ profile.basic_salary }}</li>
                 <li><strong>Official Joining Date:</strong> {{ profile.date_of_joining|date:"F d, Y" }}</li>
             </ul>
@@ -48,7 +48,7 @@
 
             <p class="text-slate-800 mb-6">Your profile is now fully active. We look forward to welcoming you to the team on your joining date.</p>
             
-            <p class="text-slate-500 text-xs mt-12 border-t border-slate-200 pt-4">Managing Director / HR<br>AEC Group</p>
+            <p class="text-slate-500 text-xs mt-12 border-t border-slate-200 pt-4">Managing Director / HR<br>{{ profile.department.name }}</p>
         </div>
     </div>
 </div>

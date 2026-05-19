@@ -20,5 +20,12 @@ def send_html_mail(subject, template_name, context, to, from_email=None, attachm
     msg.attach_alternative(html_body, "text/html")
     for fname, content, mime in (attachments or []):
         msg.attach(fname, content, mime)
-    msg.send(fail_silently=False)
+    def send_task():
+        try:
+            msg.send(fail_silently=False)
+        except Exception as e:
+            print(f"Background email failed: {e}")
+            
+    import threading
+    threading.Thread(target=send_task, daemon=True).start()
     return True
