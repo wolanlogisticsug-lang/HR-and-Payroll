@@ -13,9 +13,6 @@
         </div>
     </div>
     <div class="flex items-center gap-3">
-        {% if request.user.role == 'HR' and profile.user.email != request.user.email or request.user.role == 'MD' and profile.user.email != request.user.email %}
-        <button class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">Edit Profile</button>
-        {% endif %}
     </div>
 </div>
 

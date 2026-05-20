@@ -25,7 +25,7 @@ def setup_owner(request):
             
             # Create HQ Department if it doesn't exist
             dept, _ = Department.objects.get_or_create(
-                name='HQ & Operations', 
+                name='AEC ENCLAVE(OPC)PVT.', 
                 defaults={'code': 'HQ', 'is_active': True}
             )
             

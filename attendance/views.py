@@ -204,10 +204,10 @@ class DashboardView(LoginRequiredMixin, View):
             ).exclude(profile__user__role=User.Role.MD).select_related('profile__user', 'profile__department')
 
             if user.role == User.Role.DEPT_HEAD:
-                depts = Department.objects.filter(is_active=True, head=user).exclude(code='HQ').order_by('name')
+                depts = Department.objects.filter(is_active=True, head=user).order_by('name')
                 qs = qs.filter(profile__department__in=depts)
             else:
-                depts = Department.objects.filter(is_active=True).exclude(code='HQ').order_by('name')
+                depts = Department.objects.filter(is_active=True).order_by('name')
 
             if dept_filter:
                 qs = qs.filter(profile__department_id=dept_filter)
@@ -323,7 +323,7 @@ class LivePresenceView(LoginRequiredMixin, View):
         if request.user.role == User.Role.DEPT_HEAD:
             todays = todays.filter(profile__department__head=request.user)
 
-        depts = Department.objects.filter(is_active=True).exclude(code='HQ').order_by('name')
+        depts = Department.objects.filter(is_active=True).order_by('name')
         labels, presents, totals = [], [], []
         for d in depts:
             total_emp = d.employees.filter(is_active=True).exclude(user__role=User.Role.MD).count()

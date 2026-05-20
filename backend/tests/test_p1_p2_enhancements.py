@@ -221,9 +221,7 @@ class TestLivePresence:
 
 class TestDocumentVault:
     def test_hr_verify_lists_locked_profiles(self, hr_session):
-        r = hr_session.get(f"{BASE_URL}/onboarding/hr/verify/", timeout=15)
-        assert r.status_code == 200
-        assert b'data-testid="locked-profiles-table"' in r.content
+        pytest.skip("Locked profiles section removed from HR verification page per user request")
 
     def test_unlock_then_relock_persists(self, hr_session):
         # Find any non-MD/HR locked profile (pk)
@@ -240,14 +238,14 @@ class TestDocumentVault:
             pytest.skip("No non-MD/HR profile to test unlock/relock")
         pk = int(parts[0])
 
-        r = _csrf_post(hr_session, f"/onboarding/hr/unlock/{pk}/", {"action": "unlock"})
+        r = _csrf_post(hr_session, f"/onboarding/unlock/{pk}/", {"action": "unlock"})
         assert r.status_code in (302, 303)
         v = subprocess.run(["/root/.venv/bin/python", "-c",
                             f"import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); django.setup(); from core.models import EmployeeProfile; print(EmployeeProfile.objects.get(pk={pk}).is_locked)"],
                            capture_output=True, text=True, cwd="/app", timeout=20)
         assert "False" in v.stdout, f"unlock not persisted: {v.stdout}"
 
-        r = _csrf_post(hr_session, f"/onboarding/hr/unlock/{pk}/", {"action": "relock"})
+        r = _csrf_post(hr_session, f"/onboarding/unlock/{pk}/", {"action": "relock"})
         assert r.status_code in (302, 303)
         v = subprocess.run(["/root/.venv/bin/python", "-c",
                             f"import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); django.setup(); from core.models import EmployeeProfile; print(EmployeeProfile.objects.get(pk={pk}).is_locked)"],

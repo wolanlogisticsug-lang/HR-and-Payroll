@@ -1,167 +1,14 @@
 {% extends 'onboarding/base.html' %}
-{% block title %}{% if request.user.role == 'MD' %}Staff Report{% else %}HR Onboarding Dashboard{% endif %} - AEC Group{% endblock %}
+{% block title %}{% if request.user.role == 'MD' %}Onboarding Dashboard{% else %}HR Onboarding Dashboard{% endif %} - AEC Group{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto space-y-8">
 
-{% if request.user.role == 'MD' %}
-{# ══════════════════════════════════════════════════════════════════ #}
-{#  MD VIEW — Staff Report only (3 tabbed sections, read-only)       #}
-{# ══════════════════════════════════════════════════════════════════ #}
-<div class="flex justify-between items-center">
-    <div>
-        <h1 class="text-2xl font-bold text-slate-900">Staff Report</h1>
-        <p class="text-slate-500 text-sm mt-1">Full staff details across all departments.</p>
-    </div>
-    <!-- Summary badges -->
-    <div class="flex gap-3">
-        <span class="px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold rounded-lg">
-            {{ probation_staff.count }} Probation
-        </span>
-        <span class="px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold rounded-lg">
-            {{ permanent_staff.count }} Permanent
-        </span>
-        <span class="px-3 py-1.5 bg-slate-100 border border-slate-200 text-slate-600 text-xs font-semibold rounded-lg">
-            {{ terminated_staff.count }} Terminated
-        </span>
-    </div>
-</div>
-
-<!-- Tabbed Staff Sections -->
-<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-    <div class="border-b border-slate-200">
-        <nav class="flex -mb-px" id="lifecycle-tabs">
-            <button onclick="switchTab('permanent')" class="tab-btn w-1/3 py-4 px-1 text-center border-b-2 font-medium text-sm text-blue-600 border-blue-600 bg-blue-50">
-                Permanent Staff ({{ permanent_staff.count }})
-            </button>
-            <button onclick="switchTab('probation')" class="tab-btn w-1/3 py-4 px-1 text-center border-b-2 font-medium text-sm text-slate-500 border-transparent hover:text-slate-700 hover:border-slate-300">
-                Probation Staff ({{ probation_staff.count }})
-            </button>
-            <button onclick="switchTab('terminated')" class="tab-btn w-1/3 py-4 px-1 text-center border-b-2 font-medium text-sm text-slate-500 border-transparent hover:text-slate-700 hover:border-slate-300">
-                Terminated ({{ terminated_staff.count }})
-            </button>
-        </nav>
-    </div>
-
-    <div class="p-0">
-        <!-- Permanent Tab (default) -->
-        <div id="tab-permanent" class="tab-content block">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-50">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Employee</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Employee ID</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Department</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Designation</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Joining Date</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Basic Salary</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 bg-white">
-                    {% for profile in permanent_staff %}
-                    <tr class="hover:bg-slate-50">
-                        <td class="px-4 py-3">
-                            <div class="font-medium text-slate-900">{{ profile.user.get_full_name }}</div>
-                            <div class="text-xs text-slate-400">{{ profile.user.email }}</div>
-                        </td>
-                        <td class="px-4 py-3 text-slate-600">{{ profile.employee_id }}</td>
-                        <td class="px-4 py-3 text-slate-600">{{ profile.department.name }}</td>
-                        <td class="px-4 py-3 text-slate-600">{{ profile.designation }}</td>
-                        <td class="px-4 py-3 text-slate-600">{{ profile.date_of_joining|date:"M d, Y" }}</td>
-                        <td class="px-4 py-3 text-right font-medium text-slate-900">₹{{ profile.basic_salary }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 text-sm">No permanent staff.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Probation Tab -->
-        <div id="tab-probation" class="tab-content hidden">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-50">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Employee</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Employee ID</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Department</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Designation</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Joining Date</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Probation Ends</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Basic Salary</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 bg-white">
-                    {% for profile in probation_staff %}
-                    <tr class="hover:bg-slate-50">
-                        <td class="px-4 py-3">
-                            <div class="font-medium text-slate-900">{{ profile.user.get_full_name }}</div>
-                            <div class="text-xs text-slate-400">{{ profile.user.email }}</div>
-                        </td>
-                        <td class="px-4 py-3 text-slate-600">{{ profile.employee_id }}</td>
-                        <td class="px-4 py-3 text-slate-600">{{ profile.department.name }}</td>
-                        <td class="px-4 py-3 text-slate-600">{{ profile.designation }}</td>
-                        <td class="px-4 py-3 text-slate-600">{{ profile.date_of_joining|date:"M d, Y" }}</td>
-                        <td class="px-4 py-3">
-                            {% if profile.probation_end_date %}
-                            <span class="px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800">{{ profile.probation_end_date|date:"M d, Y" }}</span>
-                            {% else %}
-                            <span class="text-xs text-slate-400">—</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-4 py-3 text-right font-medium text-slate-900">₹{{ profile.basic_salary }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="7" class="px-4 py-8 text-center text-slate-400 text-sm">No probation staff.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Terminated Tab -->
-        <div id="tab-terminated" class="tab-content hidden">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-50">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Employee</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Employee ID</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Department</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Designation</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Terminated On</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 bg-white">
-                    {% for profile in terminated_staff %}
-                    <tr class="hover:bg-slate-50">
-                        <td class="px-4 py-3">
-                            <div class="font-medium text-slate-900">{{ profile.user.get_full_name }}</div>
-                            <div class="text-xs text-slate-400">{{ profile.user.email }}</div>
-                        </td>
-                        <td class="px-4 py-3 text-slate-600">{{ profile.employee_id }}</td>
-                        <td class="px-4 py-3 text-slate-600">{{ profile.department.name }}</td>
-                        <td class="px-4 py-3 text-slate-600">{{ profile.designation }}</td>
-                        <td class="px-4 py-3">
-                            <span class="px-2 py-0.5 rounded text-xs bg-red-100 text-red-700">{{ profile.updated_at|date:"M d, Y" }}</span>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400 text-sm">No terminated staff.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-{% else %}
-{# ══════════════════════════════════════════════════════════════════ #}
-{#  HR VIEW — Full Onboarding Dashboard                              #}
-{# ══════════════════════════════════════════════════════════════════ #}
     <!-- Header -->
     <div class="flex justify-between items-center">
         <div>
-            <h1 class="text-2xl font-bold text-slate-900">HR Onboarding Dashboard</h1>
-            <p class="text-slate-500 text-sm mt-1">Manage recruitment, verification, and employee lifecycle.</p>
+            <h1 class="text-2xl font-bold text-slate-900">{% if request.user.role == 'MD' %}Onboarding Dashboard{% else %}HR Onboarding Dashboard{% endif %}</h1>
+            <p class="text-slate-500 text-sm mt-1">Manage recruitment, verification, and candidate history.</p>
         </div>
         {% if request.user.role == 'HR' %}
         <div class="flex space-x-3">
@@ -220,45 +67,6 @@
             <button onclick="document.getElementById('creds-card').remove()" class="px-4 py-2 bg-emerald-800/40 hover:bg-emerald-800/60 border border-white/20 rounded-lg text-sm font-semibold transition shrink-0 self-start md:self-center">
                 Dismiss Card
             </button>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Probation Alerts -->
-    {% if probation_alerts %}
-    <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
-        <div class="flex">
-            <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-            </div>
-            <div class="ml-3">
-                <h3 class="text-sm font-medium text-amber-800">Probation Ending Soon</h3>
-                <div class="mt-2 text-sm text-amber-700">
-                    <ul class="list-disc pl-5 space-y-1">
-                        {% for alert in probation_alerts %}
-                        <li>
-                            <span class="font-bold">{{ alert.user.get_full_name }}</span> ({{ alert.department.name }}) - Ends on {{ alert.probation_end_date|date:"M d, Y" }}
-                            <div class="mt-1 flex space-x-2">
-                                {% if request.user.role == 'HR' %}
-                                <form method="post" action="{% url 'onboarding:confirm_permanency' alert.id %}" class="inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="text-green-700 hover:text-green-900 font-semibold text-xs border border-green-600 rounded px-2 py-0.5 hover:bg-green-100">Confirm Permanency</button>
-                                </form>
-                                <form method="post" action="{% url 'onboarding:quick_terminate' alert.id %}" class="inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="text-red-700 hover:text-red-900 font-semibold text-xs border border-red-600 rounded px-2 py-0.5 hover:bg-red-100">Terminate</button>
-                                </form>
-                                {% else %}
-                                <span class="text-xs text-amber-600 font-medium">⚠ Please contact HR to take action.</span>
-                                {% endif %}
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
         </div>
     </div>
     {% endif %}
@@ -327,178 +135,107 @@
         </div>
     </div>
 
-    <!-- Recruitment Tracking -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Verified Candidates -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-bold text-slate-800">Verified Candidates</h2>
-                <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold">{{ verified_candidates.count }}</span>
+    <!-- Recruitment Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Verified Candidates Stat Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between">
+            <div>
+                <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Verified Candidates</p>
+                <h3 class="text-3xl font-extrabold text-slate-900 mt-2">{{ verified_candidates.count }}</h3>
+                <p class="text-xs text-slate-400 mt-1">Successfully verified onboarding profiles</p>
             </div>
-            <div class="overflow-y-auto max-h-60">
-                <ul class="divide-y divide-slate-100">
-                    {% for profile in verified_candidates %}
-                    <li class="py-3 flex justify-between items-center">
-                        <div>
-                            <p class="text-sm font-medium text-slate-900">{{ profile.user.get_full_name }}</p>
-                            <p class="text-xs text-slate-500">{{ profile.department.name }} — {{ profile.designation }}</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs text-slate-400 block mb-1">
-                                {% if profile.onboarding_status == 'ACCEPTED' %}
-                                <span class="text-emerald-600 font-bold">✅ Accepted!</span>
-                                {% else %}
-                                Offer Sent
-                                {% endif %}
-                            </span>
-                            {% if request.user.role == 'HR' and profile.onboarding_status == 'ACCEPTED' %}
-                            <form method="post" action="{% url 'onboarding:add_new_staff' profile.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="text-xs font-semibold px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded">Add New Staff</button>
-                            </form>
-                            {% endif %}
-                        </div>
-                    </li>
-                    {% empty %}
-                    <li class="py-3 text-sm text-slate-500">No verified candidates.</li>
-                    {% endfor %}
-                </ul>
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
             </div>
         </div>
 
-        <!-- Rejected Candidates -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-bold text-slate-800">Rejected Candidates</h2>
-                <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-bold">{{ rejected_candidates.count }}</span>
+        <!-- Rejected Candidates Stat Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between">
+            <div>
+                <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Rejected Candidates</p>
+                <h3 class="text-3xl font-extrabold text-slate-900 mt-2">{{ rejected_candidates.count }}</h3>
+                <p class="text-xs text-slate-400 mt-1">Declined onboarding applications</p>
             </div>
-            <div class="overflow-y-auto max-h-60">
-                <ul class="divide-y divide-slate-100">
-                    {% for profile in rejected_candidates %}
-                    <li class="py-3 flex justify-between items-start">
-                        <div>
-                            <p class="text-sm font-medium text-slate-900">{{ profile.user.get_full_name }}</p>
-                            <p class="text-xs text-slate-500">{{ profile.department.name }}</p>
-                            <p class="text-xs text-red-600 mt-1"><span class="font-semibold">Reason:</span> {{ profile.rejection_reason }}</p>
-                        </div>
-                    </li>
-                    {% empty %}
-                    <li class="py-3 text-sm text-slate-500">No rejected candidates.</li>
-                    {% endfor %}
-                </ul>
+            <div class="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
             </div>
         </div>
     </div>
 
-    <!-- Employee Lifecycle Tabs -->
+    <!-- Candidate Onboarding History -->
     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="border-b border-slate-200">
-            <nav class="flex -mb-px" id="lifecycle-tabs">
-                <button onclick="switchTab('probation')" class="tab-btn w-1/3 py-4 px-1 text-center border-b-2 font-medium text-sm text-blue-600 border-blue-600 bg-blue-50">
-                    Probation Staff ({{ probation_staff.count }})
-                </button>
-                <button onclick="switchTab('permanent')" class="tab-btn w-1/3 py-4 px-1 text-center border-b-2 font-medium text-sm text-slate-500 border-transparent hover:text-slate-700 hover:border-slate-300">
-                    Permanent Staff ({{ permanent_staff.count }})
-                </button>
-                <button onclick="switchTab('terminated')" class="tab-btn w-1/3 py-4 px-1 text-center border-b-2 font-medium text-sm text-slate-500 border-transparent hover:text-slate-700 hover:border-slate-300">
-                    Terminated ({{ terminated_staff.count }})
-                </button>
-            </nav>
+        <div class="border-b border-slate-200 bg-slate-50/50 px-6 py-4">
+            <h2 class="text-base font-bold text-slate-800">Candidate Onboarding History</h2>
+            <p class="text-xs text-slate-500">Detailed verification status and historical tracking</p>
         </div>
         <div class="p-6">
-            <!-- Probation Tab -->
-            <div id="tab-probation" class="tab-content block">
-                <table class="min-w-full divide-y divide-slate-200">
-                    <thead>
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Employee</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Department</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Joining Date</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        {% for profile in probation_staff %}
-                        <tr>
-                            <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ profile.user.get_full_name }}</td>
-                            <td class="px-4 py-3 text-sm text-slate-500">{{ profile.department.name }}</td>
-                            <td class="px-4 py-3 text-sm text-slate-500">{{ profile.date_of_joining|date:"M d, Y" }}</td>
-                            <td class="px-4 py-3 text-right text-sm font-medium">
-                                {% if request.user.role == 'HR' %}
-                                <form method="post" action="{% url 'onboarding:quick_terminate' profile.id %}" class="inline">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Verified Candidate History List -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                        Verified Candidate History
+                    </h3>
+                    <div class="overflow-y-auto max-h-72 border border-slate-100 rounded-lg divide-y divide-slate-100 bg-slate-50/30">
+                        {% for profile in verified_candidates %}
+                        <div class="p-4 flex justify-between items-center bg-white hover:bg-slate-50 transition">
+                            <div>
+                                <p class="text-sm font-medium text-slate-900">{{ profile.user.get_full_name }}</p>
+                                <p class="text-xs text-slate-500">{{ profile.department.name }} — {{ profile.designation }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs text-slate-400 block mb-1">
+                                    {% if profile.onboarding_status == 'ACCEPTED' %}
+                                    <span class="text-emerald-600 font-semibold flex items-center gap-1 justify-end">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Accepted
+                                    </span>
+                                    {% else %}
+                                    Offer Sent
+                                    {% endif %}
+                                </span>
+                                {% if request.user.role == 'HR' and profile.onboarding_status == 'ACCEPTED' %}
+                                <form method="post" action="{% url 'onboarding:add_new_staff' profile.id %}">
                                     {% csrf_token %}
-                                    <button type="submit" class="text-red-600 hover:text-red-900">Quick Remove</button>
+                                    <button type="submit" class="text-[11px] font-bold px-2.5 py-1 bg-green-600 hover:bg-green-700 text-white rounded transition shadow-sm">Add New Staff</button>
                                 </form>
-                                {% else %}
-                                <span class="text-xs text-slate-400">View only</span>
                                 {% endif %}
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="p-6 text-center text-sm text-slate-500">No verified candidates.</div>
                         {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <!-- Permanent Tab -->
-            <div id="tab-permanent" class="tab-content hidden">
-                <table class="min-w-full divide-y divide-slate-200">
-                    <thead>
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Employee</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Department</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Position</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        {% for profile in permanent_staff %}
-                        <tr>
-                            <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ profile.user.get_full_name }}</td>
-                            <td class="px-4 py-3 text-sm text-slate-500">{{ profile.department.name }}</td>
-                            <td class="px-4 py-3 text-sm text-slate-500">{{ profile.designation }}</td>
-                        </tr>
+                    </div>
+                </div>
+
+                <!-- Rejected Candidate History List -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                        Rejected Candidate History
+                    </h3>
+                    <div class="overflow-y-auto max-h-72 border border-slate-100 rounded-lg divide-y divide-slate-100 bg-slate-50/30">
+                        {% for profile in rejected_candidates %}
+                        <div class="p-4 bg-white hover:bg-slate-50 transition">
+                            <p class="text-sm font-medium text-slate-900">{{ profile.user.get_full_name }}</p>
+                            <p class="text-xs text-slate-500">{{ profile.department.name }}</p>
+                            {% if profile.rejection_reason %}
+                            <div class="mt-2 text-xs text-rose-600 bg-rose-50/50 p-2 rounded border border-rose-100/50">
+                                <span class="font-bold">Reason:</span> {{ profile.rejection_reason }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% empty %}
+                        <div class="p-6 text-center text-sm text-slate-500">No rejected candidates.</div>
                         {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <!-- Terminated Tab -->
-            <div id="tab-terminated" class="tab-content hidden">
-                <table class="min-w-full divide-y divide-slate-200">
-                    <thead>
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Employee</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Department</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Terminated On</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        {% for profile in terminated_staff %}
-                        <tr>
-                            <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ profile.user.get_full_name }}</td>
-                            <td class="px-4 py-3 text-sm text-slate-500">{{ profile.department.name }}</td>
-                            <td class="px-4 py-3 text-sm text-slate-500">{{ profile.updated_at|date:"M d, Y" }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-{% endif %}
 
 </div>
-
-<script>
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.tab-btn').forEach(el => {
-            el.classList.remove('text-blue-600', 'border-blue-600', 'bg-blue-50');
-            el.classList.add('text-slate-500', 'border-transparent');
-        });
-        document.getElementById('tab-' + tabId).classList.remove('hidden');
-        const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(el => el.textContent.toLowerCase().includes(tabId));
-        if (activeBtn) {
-            activeBtn.classList.remove('text-slate-500', 'border-transparent');
-            activeBtn.classList.add('text-blue-600', 'border-blue-600', 'bg-blue-50');
-        }
-    }
-</script>
 {% endblock %}

@@ -55,12 +55,10 @@ def hr_verify_list(request):
 
     candidates = InviteToken.objects.filter(is_used=False)
     profiles = EmployeeProfile.objects.filter(onboarding_status='PENDING', is_active=False).select_related('user', 'department')
-    locked_profiles = EmployeeProfile.objects.filter(is_active=True).select_related('user', 'department')
     
     return render(request, 'onboarding/hr_verify.html', {
         'candidates': candidates,
         'profiles': profiles,
-        'locked_profiles': locked_profiles
     })
 
 @login_required
@@ -388,31 +386,11 @@ def onboarding_dashboard(request):
 
     pending_count = verification_requests.count()
 
-    probation_staff = EmployeeProfile.objects.filter(probation_status='PROBATION', is_active=True).select_related('user', 'department')
-    permanent_staff = EmployeeProfile.objects.filter(probation_status='PERMANENT', is_active=True).select_related('user', 'department')
-    terminated_staff = EmployeeProfile.objects.filter(probation_status='TERMINATED').select_related('user', 'department')
-
-    from datetime import timedelta
-    from django.utils import timezone
-    today = timezone.now().date()
-    seven_days = today + timedelta(days=7)
-    
-    probation_alerts = EmployeeProfile.objects.filter(
-        probation_status='PROBATION',
-        is_active=True,
-        probation_end_date__lte=seven_days,
-        probation_end_date__gte=today
-    ).select_related('user', 'department')
-
     return render(request, 'onboarding/dashboard.html', {
         'verified_candidates': verified_candidates,
         'rejected_candidates': rejected_candidates,
         'verification_requests': verification_requests,
         'pending_count': pending_count,
-        'probation_staff': probation_staff,
-        'permanent_staff': permanent_staff,
-        'terminated_staff': terminated_staff,
-        'probation_alerts': probation_alerts,
         'new_staff_creds': new_staff_creds,
     })
 
@@ -455,8 +433,8 @@ def mail_center_duplicate(request):
 def staff_directory(request):
     from core.models import Department, EmployeeProfile, User
     new_staff_creds = request.session.pop('new_staff_creds', None)
-    # Exclude HQ department
-    departments = Department.objects.filter(is_active=True).exclude(code='HQ').order_by('name')
+    # Include all active departments
+    departments = Department.objects.filter(is_active=True).order_by('name')
     staff_by_department = []
     total_permanent = 0
     total_probation = 0
@@ -720,6 +698,23 @@ def delete_staff_profile(request, profile_id):
     if request.method == 'POST' and request.POST.get('confirm') == 'yes':
         full_name = profile.user.get_full_name()
         emp_id    = profile.employee_id
+
+        # Delete related protected records
+        profile.attendance_records.all().delete()
+        profile.leave_requests.all().delete()
+        profile.incentives.all().delete()
+        profile.payroll_records.all().delete()
+        profile.work_logs.all().delete()
+        profile.reimbursement_requests.all().delete()
+        profile.assets.all().delete()
+        profile.nocs.all().delete()
+        profile.discipline_records.all().delete()
+
+        # Disassociate reporting manager link to avoid self-referential issues
+        profile.team_members.all().update(reporting_manager=None)
+
+        # Audit logs have a custom delete() that throws an error, so we nullify the profile field
+        profile.audit_logs.all().update(profile=None)
 
         # Delete user (cascades to profile via OneToOne if set up that way)
         user = profile.user

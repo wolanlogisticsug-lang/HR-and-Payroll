@@ -100,7 +100,7 @@ class PayrollDashboardView(LoginRequiredMixin, View):
                 dept_groups[dept_name]['payrolls'].append(p)
                 dept_groups[dept_name]['total_net'] += Decimal(p.net_salary)
 
-            departments = Department.objects.filter(is_active=True).exclude(code='HQ').order_by('name')
+            departments = Department.objects.filter(is_active=True).order_by('name')
         else:
             # Robust fetch by email for staff to handle multi-account confusion
             base_qs = Payroll.objects.filter(
@@ -154,7 +154,7 @@ class ManualAdjustmentsView(HRorMDRequiredMixin, View):
         month = int(request.GET.get('month', today.month))
         dept_id = request.GET.get('department_id')
         
-        departments = Department.objects.filter(is_active=True).exclude(code='HQ').order_by('name')
+        departments = Department.objects.filter(is_active=True).order_by('name')
         employees_data = []
         selected_dept_name = ""
         if dept_id:

@@ -23,7 +23,7 @@ class Command(BaseCommand):
             {'name': 'AEC Studies', 'code': 'EDU', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
             {'name': 'AEC Institute', 'code': 'INS', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
             {'name': 'AEC Pixcel Perfect Pvt. Ltd.', 'code': 'PIX_IT', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
-            {'name': 'HQ & Operations', 'code': 'HQ', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
+            {'name': 'AEC ENCLAVE(OPC)PVT.', 'code': 'HQ', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
         ]
 
         depts = {}
