@@ -167,3 +167,7 @@ CLOUDINARY_STORAGE = {
 if CLOUDINARY_STORAGE['CLOUD_NAME']:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+# Deprecated setting added for backward compatibility with django-cloudinary-storage under Django 6.0
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+
