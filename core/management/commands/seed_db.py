@@ -20,10 +20,11 @@ class Command(BaseCommand):
             {'name': 'AEC Cinemas', 'code': 'CIN', 'is_cinema': True, 'work_days': '0,1,2,3,4,5,6'},
             {'name': 'Bytes Caffe', 'code': 'CAF', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
             {'name': 'AEC Residency', 'code': 'RES', 'is_cinema': False, 'work_days': '0,1,2,3,4,5,6'},
-            {'name': 'AEC Studies', 'code': 'EDU', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
-            {'name': 'AEC Institute', 'code': 'INS', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
+            {'name': 'AEC Studies Pvt Ltd', 'code': 'EDU', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
+            {'name': 'AEC Institute of Advanced Studies', 'code': 'INS', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
             {'name': 'AEC Pixel Perfect Pvt Ltd', 'code': 'PIX_IT', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
-            {'name': 'AEC Enclave', 'code': 'ENCLAVE', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
+            {'name': 'AEC Enclave OPC Pvt Ltd', 'code': 'ENCLAVE', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
+            {'name': 'AEC Travel and Leisure Solutions Pvt Limited', 'code': 'TLS', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
         ]
 
         depts = {}
