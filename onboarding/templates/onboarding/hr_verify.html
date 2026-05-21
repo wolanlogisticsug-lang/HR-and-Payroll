@@ -50,17 +50,71 @@
         </div>
 
         <!-- Docs Preview -->
-        <div class="p-5 flex-grow">
+        <div class="p-5 border-b border-slate-100">
             <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Documents</h4>
             <div class="space-y-2 text-sm">
                 {% for key, doc in profile.docs_vault.items %}
+                {% if doc.url %}
                 <div class="flex justify-between items-center">
-                    <span class="text-slate-600 capitalize">{{ key }}</span>
+                    <span class="text-slate-600">
+                        {% if key == 'id_proof' %}ID Proof (Aadhaar / PAN)
+                        {% elif key == 'academic_doc' %}Highest Academic Certificate
+                        {% elif key == 'certificate_10th' %}10th Class Certificate
+                        {% elif key == 'certificate_12th' %}+2 / 12th Certificate
+                        {% elif key == 'certificate_degree' %}Degree Certificate
+                        {% elif key == 'other_certificates' %}Other Certificates
+                        {% elif key == 'exp_letter' %}Experience Letter
+                        {% elif key == 'salary_slips' %}Previous Salary Slips
+                        {% else %}{{ key }}{% endif %}
+                    </span>
                     <a href="{{ doc.url }}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium">View</a>
                 </div>
-                {% empty %}
-                <span class="text-slate-400 italic">No documents uploaded.</span>
+                {% endif %}
                 {% endfor %}
+            </div>
+        </div>
+
+        <!-- Candidate Details / Info -->
+        <div class="p-5 flex-grow bg-slate-50/30">
+            <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Onboarding Details</h4>
+            <div class="space-y-3 text-xs text-slate-600">
+                {% if profile.docs_vault.gender %}
+                <p><span class="font-semibold text-slate-700">Gender:</span> {{ profile.docs_vault.gender }}</p>
+                {% endif %}
+                {% if profile.docs_vault.pan %}
+                <p><span class="font-semibold text-slate-700">PAN Card:</span> {{ profile.docs_vault.pan }}</p>
+                {% endif %}
+                
+                {% with emergency=profile.docs_vault.emergency_contact %}
+                {% if emergency and emergency.name %}
+                <div class="bg-rose-50/50 p-2.5 rounded-lg border border-rose-100/50">
+                    <p class="font-bold text-rose-800 mb-1">Emergency Contact</p>
+                    <p class="font-medium text-slate-800">{{ emergency.name }} <span class="font-normal text-slate-500">({{ emergency.relationship }})</span></p>
+                    <p>Phone: {{ emergency.phone }}</p>
+                </div>
+                {% endif %}
+                {% endwith %}
+
+                {% with bank=profile.docs_vault.bank_details %}
+                {% if bank and bank.personal and bank.personal.account %}
+                <div class="bg-emerald-50/50 p-2.5 rounded-lg border border-emerald-100/50">
+                    <p class="font-bold text-emerald-800 mb-1">Personal Bank Account</p>
+                    <p><span class="font-semibold">Bank:</span> {{ bank.personal.bank_name }}</p>
+                    <p><span class="font-semibold">Branch:</span> {{ bank.personal.branch_name }}</p>
+                    <p><span class="font-semibold">IFSC:</span> {{ bank.personal.ifsc_code }}</p>
+                    <p><span class="font-semibold">A/C:</span> {{ bank.personal.account }}</p>
+                </div>
+                {% endif %}
+                {% if bank and bank.salary and bank.salary.account %}
+                <div class="bg-blue-50/50 p-2.5 rounded-lg border border-blue-100/50">
+                    <p class="font-bold text-blue-800 mb-1">Salary Bank Account</p>
+                    <p><span class="font-semibold">Bank:</span> {{ bank.salary.bank_name }}</p>
+                    <p><span class="font-semibold">Branch:</span> {{ bank.salary.branch_name }}</p>
+                    <p><span class="font-semibold">IFSC:</span> {{ bank.salary.ifsc_code }}</p>
+                    <p><span class="font-semibold">A/C:</span> {{ bank.salary.account }}</p>
+                </div>
+                {% endif %}
+                {% endwith %}
             </div>
         </div>
 
