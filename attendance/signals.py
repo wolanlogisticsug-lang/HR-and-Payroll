@@ -21,7 +21,7 @@ from core.models import Attendance
 
 
 SHIFT_START_HOUR = 9
-SHIFT_START_MIN = 0
+SHIFT_START_MIN = 30
 
 
 def _process_late_check(attendance_id: int) -> None:
@@ -145,9 +145,5 @@ def check_late_attendance(sender, instance, created, **kwargs):
     if kwargs.get('update_fields') and 'is_late' in (kwargs.get('update_fields') or set()):
         return
     
-    try:
-        from django_q.tasks import async_task
-        async_task('attendance.signals._process_late_check', instance.pk)
-    except ImportError:
-        # Fallback to synchronous if Django-Q is not running/installed
-        _process_late_check(instance.pk)
+    # Execute synchronously to ensure immediate update of late_minutes and discipline records
+    _process_late_check(instance.pk)

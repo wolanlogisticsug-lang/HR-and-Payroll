@@ -133,11 +133,20 @@ class ClockInOutView(LoginRequiredMixin, View):
         if action == 'in':
             if not attendance.in_time:
                 attendance.in_time = timezone.now()
-                # Late-coming logic: > 9:15 AM
-                from datetime import time
-                local_time = timezone.localtime(attendance.in_time).time()
-                if local_time > time(9, 15) and not dept.is_cinema:
-                    attendance.is_late = True
+                # Late-coming logic: Shift start at 9:30 AM. 15 mins grace (up to 9:45 AM is not late)
+                if not dept.is_cinema:
+                    local_in = timezone.localtime(attendance.in_time)
+                    shift_start_local = local_in.replace(hour=9, minute=30, second=0, microsecond=0)
+                    from datetime import timedelta
+                    grace = timedelta(minutes=15)
+                    
+                    if local_in > (shift_start_local + grace):
+                        attendance.is_late = True
+                        late_diff = local_in - shift_start_local
+                        attendance.late_minutes = int(late_diff.total_seconds() / 60)
+                    else:
+                        attendance.is_late = False
+                        attendance.late_minutes = 0
                     
                     # Count occurrences
                     late_count = Attendance.objects.filter(
