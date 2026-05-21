@@ -29,7 +29,7 @@ class AssetsDashboardView(LoginRequiredMixin, View):
         if is_manager:
             assets = CompanyAsset.objects.select_related('profile__user').order_by('-issued_date')[:100]
             nocs = NOC.objects.select_related('profile__user').order_by('-created_at')[:50]
-            employees = EmployeeProfile.objects.filter(is_active=True).select_related('user')
+            employees = EmployeeProfile.objects.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT]).select_related('user')
         else:
             try:
                 profile = u.employee_profile

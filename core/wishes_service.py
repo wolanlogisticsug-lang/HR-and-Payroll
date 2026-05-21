@@ -20,7 +20,7 @@ def ensure_daily_wishes_and_alerts():
     if not hr_user:
         hr_user = User.objects.filter(is_superuser=True).first()
         
-    profiles = EmployeeProfile.objects.filter(is_active=True).select_related('user', 'department')
+    profiles = EmployeeProfile.objects.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT]).select_related('user', 'department')
     
     for profile in profiles:
         u = profile.user

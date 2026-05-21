@@ -64,6 +64,7 @@ def birthday_sms():
     today = date.today()
     qs = EmployeeProfile.objects.filter(
         is_active=True,
+        probation_status__in=['PROBATION', 'PERMANENT'],
         user__date_of_birth__month=today.month,
         user__date_of_birth__day=today.day,
     ).select_related('user')
@@ -84,6 +85,7 @@ def anniversary_sms():
     today = date.today()
     qs = EmployeeProfile.objects.filter(
         is_active=True,
+        probation_status__in=['PROBATION', 'PERMANENT'],
         date_of_joining__month=today.month,
         date_of_joining__day=today.day,
     ).exclude(date_of_joining__year=today.year).select_related('user')

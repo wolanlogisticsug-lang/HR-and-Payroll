@@ -75,7 +75,7 @@ def generate_samples():
                             in_time=in_dt,
                             out_time=out_dt,
                             is_valid=True,
-                            location_name="HQ Office"
+                            location_name="AEC Group"
                         )
 
 if __name__ == '__main__':

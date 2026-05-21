@@ -47,15 +47,15 @@ class ClockInOutView(LoginRequiredMixin, View):
 
         # 1. Validity: Strict Geofence for GPS
         is_valid = True
-        location_name = dept.name
+        location_name = "AEC Group"
         
         AUTHORIZED_LOCATIONS = [
-            {"name": "AEC Studies Pvt. Ltd", "lat": 9.967283003625232, "lon": 76.28662859325976},
-            {"name": "AEC Pixcel Perfect PVT", "lat": 9.967283003625232, "lon": 76.28662859325976},
-            {"name": "AEC Institute", "lat": 9.967283003625232, "lon": 76.28662859325976},
-            {"name": "AEC CINEMAS", "lat": 9.498526389705322, "lon": 76.34305504232113},
-            {"name": "Bytes Cafe Alappuzha", "lat": 9.506290068630923, "lon": 76.34089742310876},
-            {"name": "AEC RESIDENCY ALAPPUZHA", "lat": 9.506567290951638, "lon": 76.34080264948254},
+            {"name": "AEC Group", "lat": 9.967283003625232, "lon": 76.28662859325976},
+            {"name": "AEC Group", "lat": 9.967283003625232, "lon": 76.28662859325976},
+            {"name": "AEC Group", "lat": 9.967283003625232, "lon": 76.28662859325976},
+            {"name": "AEC Group", "lat": 9.498526389705322, "lon": 76.34305504232113},
+            {"name": "AEC Group", "lat": 9.506290068630923, "lon": 76.34089742310876},
+            {"name": "AEC Group", "lat": 9.506567290951638, "lon": 76.34080264948254},
         ]
         
         if lat and lon:
@@ -225,9 +225,9 @@ class DashboardView(LoginRequiredMixin, View):
 
             # Manageable employees for manual attendance entry (exclude MD)
             if user.role == User.Role.DEPT_HEAD:
-                context['manageable_employees'] = EmployeeProfile.objects.filter(is_active=True, department__in=depts).exclude(user__role=User.Role.MD).select_related('user').order_by('user__first_name')
+                context['manageable_employees'] = EmployeeProfile.objects.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT], department__in=depts).exclude(user__role=User.Role.MD).select_related('user').order_by('user__first_name')
             else:
-                context['manageable_employees'] = EmployeeProfile.objects.filter(is_active=True).exclude(user__role=User.Role.MD).select_related('user').order_by('user__first_name')
+                context['manageable_employees'] = EmployeeProfile.objects.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT]).exclude(user__role=User.Role.MD).select_related('user').order_by('user__first_name')
 
             # Heatmap aggregation: per department -> present vs total active (always today)
             today_att = Attendance.objects.filter(date=today).select_related(
@@ -235,7 +235,7 @@ class DashboardView(LoginRequiredMixin, View):
             )
             labels, presents, totals = [], [], []
             for d in depts:
-                total_emp = d.employees.filter(is_active=True).exclude(user__role=User.Role.MD).count()
+                total_emp = d.employees.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT]).exclude(user__role=User.Role.MD).count()
                 if total_emp == 0:
                     continue
                 present_emp = today_att.filter(
@@ -263,7 +263,7 @@ class DashboardView(LoginRequiredMixin, View):
                         total_work_days += 1
                     curr_date += datetime.timedelta(days=1)
 
-                dept_employees = dept.employees.filter(is_active=True).exclude(user__role=User.Role.MD).select_related('user')
+                dept_employees = dept.employees.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT]).exclude(user__role=User.Role.MD).select_related('user')
                 dept_att = qs.filter(profile__department=dept)
 
                 emp_summaries = []
@@ -326,7 +326,7 @@ class LivePresenceView(LoginRequiredMixin, View):
         depts = Department.objects.filter(is_active=True).order_by('name')
         labels, presents, totals = [], [], []
         for d in depts:
-            total_emp = d.employees.filter(is_active=True).exclude(user__role=User.Role.MD).count()
+            total_emp = d.employees.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT]).exclude(user__role=User.Role.MD).count()
             if total_emp == 0:
                 continue
             labels.append(d.code)
@@ -375,7 +375,7 @@ class ManualAttendanceView(LoginRequiredMixin, View):
             return redirect('attendance:dashboard')
 
         try:
-            target_profile = EmployeeProfile.objects.get(pk=profile_id, is_active=True)
+            target_profile = EmployeeProfile.objects.get(pk=profile_id, is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT])
         except EmployeeProfile.DoesNotExist:
             messages.error(request, "Selected employee profile not found.")
             return redirect('attendance:dashboard')

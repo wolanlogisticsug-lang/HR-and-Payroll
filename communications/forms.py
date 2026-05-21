@@ -56,7 +56,7 @@ class OfferLetterForm(forms.Form):
 
 class PromotionForm(forms.Form):
     employee = forms.ModelChoiceField(
-        queryset=EmployeeProfile.objects.filter(is_active=True),
+        queryset=EmployeeProfile.objects.filter(is_active=True, probation_status__in=['PROBATION', 'PERMANENT']),
         empty_label='— Select an employee —',
         widget=forms.Select(attrs={'class': _em_sel})
     )

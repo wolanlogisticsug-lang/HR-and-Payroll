@@ -26,7 +26,7 @@ class Command(BaseCommand):
         from core.models import Department
         dept_names = [
             'AEC Cinemas', 'Bytes Caffe', 'AEC Residency',
-            'AEC Study Abroad', 'AEC Institute', 'AEC Pixcel Perfect PVT'
+            'AEC Study Abroad', 'AEC Institute', 'AEC Pixel Perfect Pvt Ltd'
         ]
         for name in dept_names:
             Department.objects.get_or_create(name=name)

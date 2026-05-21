@@ -22,8 +22,8 @@ class Command(BaseCommand):
             {'name': 'AEC Residency', 'code': 'RES', 'is_cinema': False, 'work_days': '0,1,2,3,4,5,6'},
             {'name': 'AEC Studies', 'code': 'EDU', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
             {'name': 'AEC Institute', 'code': 'INS', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
-            {'name': 'AEC Pixcel Perfect Pvt. Ltd.', 'code': 'PIX_IT', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
-            {'name': 'AEC ENCLAVE(OPC)PVT.', 'code': 'HQ', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
+            {'name': 'AEC Pixel Perfect Pvt Ltd', 'code': 'PIX_IT', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
+            {'name': 'AEC Enclave', 'code': 'ENCLAVE', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
         ]
 
         depts = {}
@@ -57,7 +57,7 @@ class Command(BaseCommand):
             # Create MD Profile
             EmployeeProfile.objects.create(
                 user=md_user,
-                department=depts['HQ'],
+                department=depts['ENCLAVE'],
                 designation='Managing Director',
                 probation_status=EmployeeProfile.ProbationStatus.PERMANENT,
                 basic_salary=Decimal('100000.00'),
@@ -81,7 +81,7 @@ class Command(BaseCommand):
             # Create HR Profile
             EmployeeProfile.objects.create(
                 user=hr_user,
-                department=depts['HQ'],
+                department=depts['ENCLAVE'],
                 designation='HR Manager',
                 probation_status=EmployeeProfile.ProbationStatus.PERMANENT,
                 basic_salary=Decimal('50000.00'),

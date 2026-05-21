@@ -62,7 +62,7 @@ def search(request):
     # ── Employees ──
     # Managers (HR/MD/DEPT_HEAD) see all; staff only sees themselves.
     if _is_manager(user):
-        emp_qs = EmployeeProfile.objects.select_related('user', 'department').filter(is_active=True)
+        emp_qs = EmployeeProfile.objects.select_related('user', 'department').filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT])
     else:
         emp_qs = EmployeeProfile.objects.select_related('user', 'department').filter(user=user)
 

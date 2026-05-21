@@ -51,7 +51,7 @@ def dashboard(request):
 
     if u.role == 'MD':
         ctx['md_stats'] = {
-            'total_employees':    EmployeeProfile.objects.filter(is_active=True).count(),
+            'total_employees':    EmployeeProfile.objects.filter(is_active=True, probation_status__in=['PROBATION', 'PERMANENT']).count(),
             'on_probation':       EmployeeProfile.objects.filter(is_active=True, probation_status='PROBATION').count(),
             'permanent_employees':EmployeeProfile.objects.filter(is_active=True, probation_status='PERMANENT').count(),
             'present_today':      Attendance.objects.filter(date=today, is_valid=True).count(),
@@ -81,7 +81,7 @@ def dashboard(request):
     # --- Team View: employees who report to the logged-in user ---
     try:
         mgr_profile = u.employee_profile
-        team = mgr_profile.team_members.filter(is_active=True).select_related('user', 'department')
+        team = mgr_profile.team_members.filter(is_active=True, probation_status__in=['PROBATION', 'PERMANENT']).select_related('user', 'department')
         ctx['team_members'] = team
     except Exception:
         ctx['team_members'] = []

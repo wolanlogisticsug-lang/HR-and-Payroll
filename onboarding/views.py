@@ -468,7 +468,7 @@ def staff_directory(request):
         'total_permanent':  total_permanent,
         'total_probation':  total_probation,
         'total_terminated': total_terminated,
-        'active_employees': EmployeeProfile.objects.filter(is_active=True).exclude(user__role=User.Role.MD).select_related('user').order_by('user__first_name'),
+        'active_employees': EmployeeProfile.objects.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT]).exclude(user__role=User.Role.MD).select_related('user').order_by('user__first_name'),
         'new_staff_creds':  new_staff_creds,
     })
 
@@ -632,7 +632,7 @@ def assign_manager(request, profile_id):
     """
     from core.models import EmployeeProfile
 
-    profile = get_object_or_404(EmployeeProfile, pk=profile_id, is_active=True)
+    profile = get_object_or_404(EmployeeProfile, pk=profile_id, is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT])
 
     if request.method == 'POST':
         mgr_id = request.POST.get('reporting_manager_id') or None
@@ -644,7 +644,7 @@ def assign_manager(request, profile_id):
             return redirect('onboarding:staff_directory')
 
         try:
-            new_mgr = EmployeeProfile.objects.get(pk=mgr_id, is_active=True)
+            new_mgr = EmployeeProfile.objects.get(pk=mgr_id, is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT])
         except EmployeeProfile.DoesNotExist:
             messages.error(request, "Manager not found.")
             return redirect('onboarding:staff_directory')
@@ -902,7 +902,7 @@ def staff_detail(request, profile_id=None):
     emergency = vault.get('emergency_contact', {})
 
     from core.models import EmployeeProfile as _EP2, User as _U2
-    active_employees = _EP2.objects.filter(is_active=True).exclude(pk=profile.pk).select_related('user').order_by('user__first_name')
+    active_employees = _EP2.objects.filter(is_active=True, probation_status__in=[_EP2.ProbationStatus.PROBATION, _EP2.ProbationStatus.PERMANENT]).exclude(pk=profile.pk).select_related('user').order_by('user__first_name')
 
     return render(request, 'onboarding/staff_detail.html', {
         'profile': profile,

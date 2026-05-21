@@ -25,8 +25,8 @@ def setup_owner(request):
             
             # Create HQ Department if it doesn't exist
             dept, _ = Department.objects.get_or_create(
-                name='AEC ENCLAVE(OPC)PVT.', 
-                defaults={'code': 'HQ', 'is_active': True}
+                name='AEC Enclave', 
+                defaults={'code': 'ENCLAVE', 'is_active': True}
             )
             
             # Create Employee Profile
@@ -320,7 +320,7 @@ def tasks_view(request):
     # Manager context
     ctx['is_manager'] = u.role in ['MD', 'GM', 'HR', 'DEPT_HEAD']
     if ctx['is_manager']:
-        all_staff = EmployeeProfile.objects.filter(is_active=True).select_related('user', 'department').order_by('department__name', 'user__first_name')
+        all_staff = EmployeeProfile.objects.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT]).select_related('user', 'department').order_by('department__name', 'user__first_name')
         if u.role == 'DEPT_HEAD':
             all_staff = all_staff.filter(department__head=u)
         ctx['all_staff'] = all_staff

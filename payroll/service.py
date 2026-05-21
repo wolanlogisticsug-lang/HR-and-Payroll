@@ -328,7 +328,7 @@ def generate_for_profile(profile: EmployeeProfile, year: int, month: int, ot_ove
 def generate_for_month(year: int, month: int) -> list:
     """Bulk-generate for all active employees. Returns list of Payroll."""
     out = []
-    for profile in EmployeeProfile.objects.filter(is_active=True).select_related('user', 'department'):
+    for profile in EmployeeProfile.objects.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT]).select_related('user', 'department'):
         out.append(generate_for_profile(profile, year, month))
     return out
 

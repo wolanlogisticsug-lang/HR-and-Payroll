@@ -84,7 +84,7 @@ class PayrollDashboardView(LoginRequiredMixin, View):
             incentives = Incentive.objects.filter(
                 month__year=year, month__month=month
             ).select_related('profile__user', 'created_by').order_by('-created_at')
-            employees = EmployeeProfile.objects.filter(is_active=True).select_related('user', 'department')
+            employees = EmployeeProfile.objects.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT]).select_related('user', 'department')
             history_qs = Payroll.objects.filter(status__in=[
                 Payroll.Status.HR_APPROVED, Payroll.Status.FINALIZED
             ]).order_by('month')
@@ -160,7 +160,7 @@ class ManualAdjustmentsView(HRorMDRequiredMixin, View):
         if dept_id:
             dept = get_object_or_404(Department, id=dept_id)
             selected_dept_name = dept.name
-            profiles = dept.employees.filter(is_active=True)
+            profiles = dept.employees.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT])
             for p in profiles:
                 svc = PayrollService(p, year, month)
                 computed_ot = svc.get_ot_hours()
@@ -184,7 +184,7 @@ class ManualAdjustmentsView(HRorMDRequiredMixin, View):
         dept = get_object_or_404(Department, id=dept_id)
         
         created = []
-        for profile in dept.employees.filter(is_active=True):
+        for profile in dept.employees.filter(is_active=True, probation_status__in=[EmployeeProfile.ProbationStatus.PROBATION, EmployeeProfile.ProbationStatus.PERMANENT]):
             pid = str(profile.id)
             ot = request.POST.get(f'ot_{pid}')
             inc = request.POST.get(f'incentive_{pid}')

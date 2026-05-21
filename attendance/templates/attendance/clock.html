@@ -44,8 +44,15 @@
 
             <!-- Webcam Container -->
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-2">Face Verification</label>
-                <div
+                <div class="flex items-center justify-between mb-2">
+                    <label class="block text-sm font-medium text-slate-700">Face Verification (Optional)</label>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggle-face" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <span class="ml-2 text-xs text-slate-500 font-medium select-none">Enable Camera</span>
+                    </label>
+                </div>
+                <div id="webcam-section"
                     class="relative bg-black rounded-lg overflow-hidden border border-slate-200 w-full h-64 flex items-center justify-center">
                     <video id="video" class="h-full w-full object-cover" autoplay muted playsinline></video>
                     <canvas id="canvas" class="hidden"></canvas>
@@ -147,17 +154,48 @@
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const webcamError = document.getElementById('webcam-error');
+    const toggleFace = document.getElementById('toggle-face');
+    const webcamSection = document.getElementById('webcam-section');
+    let localStream = null;
 
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-            .then(function (stream) {
-                video.srcObject = stream;
-            })
-            .catch(function (err) {
-                console.error("Webcam Error:", err);
-                webcamError.classList.remove('hidden');
-            });
+    function startWebcam() {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+                .then(function (stream) {
+                    localStream = stream;
+                    video.srcObject = stream;
+                    webcamError.classList.add('hidden');
+                    video.classList.remove('hidden');
+                })
+                .catch(function (err) {
+                    console.error("Webcam Error:", err);
+                    webcamError.classList.remove('hidden');
+                    video.classList.add('hidden');
+                });
+        }
     }
+
+    function stopWebcam() {
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            localStream = null;
+        }
+        video.srcObject = null;
+    }
+
+    toggleFace.addEventListener('change', function() {
+        if (this.checked) {
+            webcamSection.classList.remove('hidden');
+            startWebcam();
+        } else {
+            stopWebcam();
+            webcamSection.classList.add('hidden');
+            document.getElementById('face_image').value = '';
+        }
+    });
+
+    // Start by default
+    startWebcam();
 
     // 4. Submit Action
     function submitAttendance(action) {
@@ -170,17 +208,21 @@
 
         document.getElementById('action').value = action;
 
-        // Capture Face image
-        try {
-            if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                const context = canvas.getContext('2d');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                document.getElementById('face_image').value = canvas.toDataURL('image/jpeg', 0.7);
+        // Capture Face image only if enabled
+        if (toggleFace.checked) {
+            try {
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    const context = canvas.getContext('2d');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    document.getElementById('face_image').value = canvas.toDataURL('image/jpeg', 0.7);
+                }
+            } catch (e) {
+                console.warn("Face capture failed, proceeding without image.");
             }
-        } catch (e) {
-            console.warn("Face capture failed, proceeding without image.");
+        } else {
+            document.getElementById('face_image').value = '';
         }
 
         const form = document.getElementById('attendance-form');
