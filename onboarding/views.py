@@ -282,8 +282,8 @@ def candidate_onboarding_form(request, token):
             import uuid, re
 
             # ── Credential generation: name-based username (matches add_new_staff logic) ──
-            first = data['first_name'].strip()
-            last  = data['last_name'].strip()
+            first = data['first_name'].strip().upper()
+            last  = data['last_name'].strip().upper()
             name_str = f"{first}_{last}"
             base_username = re.sub(r'[^a-zA-Z0-9_]', '', name_str.replace(' ', '_')).lower()
             username = base_username
@@ -483,8 +483,8 @@ def add_staff_form(request):
 
     if request.method == 'POST':
         # --- User fields ---
-        first_name = request.POST.get('first_name', '').strip()
-        last_name  = request.POST.get('last_name', '').strip()
+        first_name = request.POST.get('first_name', '').strip().upper()
+        last_name  = request.POST.get('last_name', '').strip().upper()
         email      = request.POST.get('email', '').strip()
         phone      = request.POST.get('phone', '').strip()
         dob        = request.POST.get('date_of_birth') or None
