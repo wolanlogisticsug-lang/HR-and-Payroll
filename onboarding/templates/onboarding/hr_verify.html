@@ -178,8 +178,7 @@
                     const newCount = parseInt(match[1], 10);
                     document.getElementById('pending-count-badge').textContent = newCount + ' pending';
                     if (newCount > knownCount) {
-                        // New submissions arrived — show toast
-                        document.getElementById('new-submission-toast').classList.remove('hidden');
+                        location.reload();
                     }
                     knownCount = newCount;
                 }

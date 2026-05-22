@@ -6,14 +6,25 @@ from django.http import JsonResponse
 from .models import InviteToken
 from .forms import HRInviteForm, CandidateOnboardingForm
 from .utils import send_onboarding_email
+from functools import wraps
+from django.core.exceptions import PermissionDenied
 
 from core.models import User
 
 def is_hr_or_md(user):
     return user.is_authenticated and user.role in [User.Role.HR, User.Role.MD]
 
-@login_required
-@user_passes_test(is_hr_or_md)
+def hr_only(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        if request.user.role not in ('HR', 'MD'):
+            raise PermissionDenied
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+@hr_only
 def invite_candidate(request):
     if request.method == 'POST':
         form = HRInviteForm(request.POST)
@@ -29,8 +40,7 @@ def invite_candidate(request):
         form = HRInviteForm()
     return render(request, 'onboarding/invite.html', {'form': form})
 
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def hr_verify_list(request):
     from core.models import EmployeeProfile
     
@@ -61,8 +71,7 @@ def hr_verify_list(request):
         'profiles': profiles,
     })
 
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def hr_verify_detail(request, candidate_id):
     candidate = get_object_or_404(InviteToken, id=candidate_id)
     if request.method == 'POST':
@@ -79,8 +88,7 @@ def hr_verify_detail(request, candidate_id):
         return redirect('onboarding:hr_verify_list')
     return render(request, 'onboarding/hr_verify_detail.html', {'candidate': candidate})
 
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def create_offer(request, profile_id):
     from core.models import EmployeeProfile
     from .forms import OfferLetterForm
@@ -99,8 +107,7 @@ def create_offer(request, profile_id):
     
     return render(request, 'onboarding/create_offer.html', {'form': form, 'profile': profile})
 
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def preview_offer(request, profile_id):
     from core.models import EmployeeProfile
     profile = get_object_or_404(EmployeeProfile, id=profile_id)
@@ -130,6 +137,26 @@ def preview_offer(request, profile_id):
             profile.user.is_active = False
             profile.user.save()
             profile.save()
+
+            # Create or update OfferLetter model record
+            from communications.models import OfferLetter
+            OfferLetter.objects.update_or_create(
+                profile=profile,
+                defaults={
+                    'candidate_name': profile.user.get_full_name(),
+                    'candidate_email': profile.user.email,
+                    'department': profile.department,
+                    'designation': profile.designation,
+                    'probation_status': profile.probation_status,
+                    'basic_salary': profile.basic_salary,
+                    'date_of_joining': profile.date_of_joining,
+                    'probation_duration': probation_duration,
+                    'duties': duties,
+                    'additional_notes': additional_notes,
+                    'sent_by': request.user,
+                    'is_sent': True,
+                }
+            )
             
             # Build the acceptance URL for the candidate
             from django.urls import reverse
@@ -166,8 +193,7 @@ def preview_offer(request, profile_id):
         'additional_notes': additional_notes
     })
 
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def mail_center(request):
     from core.models import EmployeeProfile
     sent_offers = EmployeeProfile.objects.filter(
@@ -187,8 +213,16 @@ def accept_offer(request, profile_id):
         profile.onboarding_status = 'ACCEPTED'
         profile.save()
         
-        from communications.models import InternalMail
+        from communications.models import InternalMail, OfferLetter
         from core.models import User
+        from django.utils import timezone
+        
+        offer = OfferLetter.objects.filter(profile=profile).first()
+        if offer:
+            offer.is_accepted = True
+            offer.accepted_at = timezone.now()
+            offer.save()
+
         hr_users = User.objects.filter(role=User.Role.HR, is_active=True)
         for hr_user in hr_users:
             InternalMail.objects.create(
@@ -198,14 +232,14 @@ def accept_offer(request, profile_id):
                 subject=f"Offer Accepted - {profile.user.get_full_name()} ({profile.designation})",
                 body=f"Candidate {profile.user.get_full_name()} has formally accepted the offer for {profile.designation}. Please verify and activate their profile.",
                 mail_type='OFFER_ACCEPTANCE',
+                related_offer=offer,
             )
             
         return render(request, 'onboarding/success.html', {'message': 'Offer accepted successfully! Your profile will be activated shortly.'})
         
     return render(request, 'onboarding/accept_offer.html', {'profile': profile})
 
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def add_new_staff(request, profile_id):
     from core.models import EmployeeProfile, User
     import uuid
@@ -250,8 +284,7 @@ def add_new_staff(request, profile_id):
         
     return redirect('onboarding:onboarding_dashboard')
 
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def unlock_profile(request, profile_id):
     from core.models import EmployeeProfile
     profile = get_object_or_404(EmployeeProfile, id=profile_id)
@@ -368,8 +401,7 @@ def candidate_onboarding_form(request, token):
 def onboarding_success(request):
     return render(request, 'onboarding/success.html')
 
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def onboarding_dashboard(request):
     from core.models import EmployeeProfile
 
@@ -394,8 +426,7 @@ def onboarding_dashboard(request):
         'new_staff_creds': new_staff_creds,
     })
 
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def quick_terminate(request, profile_id):
     from core.models import EmployeeProfile
     profile = get_object_or_404(EmployeeProfile, id=profile_id)
@@ -408,7 +439,7 @@ def quick_terminate(request, profile_id):
         messages.success(request, f"{profile.user.get_full_name()} has been marked as Terminated.")
     return redirect('onboarding:onboarding_dashboard')
 
-@login_required
+@hr_only
 def confirm_permanency(request, profile_id):
     from core.models import EmployeeProfile
     profile = get_object_or_404(EmployeeProfile, id=profile_id)
@@ -419,8 +450,7 @@ def confirm_permanency(request, profile_id):
     return redirect('onboarding:onboarding_dashboard')
 
 
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def mail_center_duplicate(request):
     # Removing duplicate mail_center view
     pass
@@ -473,8 +503,7 @@ def staff_directory(request):
     })
 
 
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def add_staff_form(request):
     from core.models import Department, EmployeeProfile, User as _User
     import uuid as _uuid

@@ -82,7 +82,7 @@ def search(request):
             'name': p.user.get_full_name() or p.user.username,
             'meta': f"{p.employee_id} · {p.department.name}"
                     + (f" · {p.designation}" if p.designation else ''),
-            'url': reverse('onboarding:onboarding_dashboard'),
+            'url': reverse('onboarding:staff_detail', kwargs={'profile_id': p.id}),
         }
         for p in emp_qs[:8]
     ]

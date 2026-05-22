@@ -4,10 +4,24 @@ from django.contrib import messages
 from django.db.models import Q
 from core.models import User
 from .models import InternalMail, OfferLetter
+from functools import wraps
+from django.core.exceptions import PermissionDenied
 
 
 def is_hr_or_md(user):
     return user.is_authenticated and user.role in [User.Role.HR, User.Role.MD]
+
+
+def hr_only(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        if request.user.role not in ('HR', 'MD'):
+            raise PermissionDenied
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
 
 
 # ─────────────────────────────────────────────
@@ -119,8 +133,7 @@ def send_promotion(request):
 # ─────────────────────────────────────────────
 # STEP 1: GENERATE OFFER LETTER FORM
 # ─────────────────────────────────────────────
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def generate_offer_letter(request):
     from .forms import OfferLetterForm
 
@@ -151,8 +164,7 @@ def generate_offer_letter(request):
 # ─────────────────────────────────────────────
 # STEP 2: PREVIEW + SEND OFFER
 # ─────────────────────────────────────────────
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def offer_preview(request, offer_id):
     offer = get_object_or_404(OfferLetter, id=offer_id)
 
@@ -208,8 +220,7 @@ def offer_preview(request, offer_id):
 # ─────────────────────────────────────────────
 # EDIT OFFER (pre-send)
 # ─────────────────────────────────────────────
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def offer_edit(request, offer_id):
     from .forms import OfferLetterForm
     offer = get_object_or_404(OfferLetter, id=offer_id, is_sent=False)
@@ -377,8 +388,7 @@ def offer_accept(request, token):
 # ─────────────────────────────────────────────
 # HR: VERIFY ACCEPTANCE → activate employee
 # ─────────────────────────────────────────────
-@login_required
-@user_passes_test(is_hr_or_md)
+@hr_only
 def verify_acceptance(request, mail_id):
     mail = get_object_or_404(InternalMail, id=mail_id, mail_type='OFFER_ACCEPTANCE')
     offer = mail.related_offer
@@ -393,10 +403,33 @@ def verify_acceptance(request, mail_id):
 
     if request.method == 'POST':
         profile = offer.profile
+        
+        # Generate unique Employee ID
+        if not profile.employee_id:
+            import uuid
+            dept_code = profile.department.code if profile.department and profile.department.code else "GEN"
+            employee_id = f"AEC-{dept_code}-{uuid.uuid4().hex[:6].upper()}"
+            profile.employee_id = employee_id
+        else:
+            employee_id = profile.employee_id
+
+        # Username: the employee's name (lowercase, spaces replaced by underscore, unique)
+        import re
+        name_str = f"{profile.user.first_name}_{profile.user.last_name}"
+        username = re.sub(r'[^a-zA-Z0-9_]', '', name_str.replace(' ', '_')).lower()
+
+        original_username = username
+        counter = 1
+        while User.objects.filter(username=username).exclude(id=profile.user.id).exists():
+            username = f"{original_username}{counter}"
+            counter += 1
+
         profile.is_active = True
         profile.onboarding_status = 'COMPLETED'
         profile.save()
 
+        profile.user.username = username
+        profile.user.set_password(employee_id)
         profile.user.is_active = True
         profile.user.save()
 
@@ -412,12 +445,20 @@ def verify_acceptance(request, mail_id):
         except Exception:
             pass
 
+        # Save credentials in session so dashboard can display a nice copyable popup/banner
+        request.session['new_staff_creds'] = {
+            'name': profile.user.get_full_name(),
+            'username': username,
+            'password': employee_id,
+            'dept': profile.department.name if profile.department else "General",
+            'pos': profile.designation,
+        }
+
         messages.success(
             request,
-            f"✅ {profile.user.get_full_name()} activated as employee (ID: {profile.employee_id}). "
-            f"Profile photo: {'✓' if profile.user.profile_picture else '✗ none uploaded'}."
+            f"✅ {profile.user.get_full_name()} activated as employee (ID: {profile.employee_id})."
         )
-        return redirect('communications:inbox')
+        return redirect('onboarding:onboarding_dashboard')
 
     return render(request, 'communications/verify_acceptance.html', {
         'mail': mail,

@@ -3,6 +3,13 @@
 
 {% block content %}
 <div class="max-w-3xl mx-auto">
+    <div class="mb-4">
+        <a href="{% url 'onboarding:onboarding_dashboard' %}" class="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-800 transition">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Back to Onboarding Dashboard
+        </a>
+    </div>
+
     <div class="mb-8 flex justify-between items-center">
         <div>
             <h2 class="text-2xl font-bold text-slate-900">Preview Offer Letter</h2>

@@ -69,6 +69,20 @@ class InternalMail(models.Model):
             return self.sender.email
         return self.sender_email
 
+    @property
+    def related_profile(self):
+        from core.models import EmployeeProfile
+        if self.related_offer and self.related_offer.profile:
+            return self.related_offer.profile
+        email = self.sender_email
+        if not email and self.related_offer:
+            email = self.related_offer.candidate_email
+        if email:
+            profile = EmployeeProfile.objects.filter(user__email=email).order_by('-id').first()
+            if profile:
+                return profile
+        return None
+
 
 # ─────────────────────────────────────────────────────────────
 # Offer Letter  (standalone HR-generated, email-first)

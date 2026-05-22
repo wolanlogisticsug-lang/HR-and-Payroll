@@ -25,7 +25,7 @@ from twofa.emails import send_html_mail
 
 def _half_day_count(leave: LeaveRequest) -> Decimal:
     """Half-day units consumed by a leave request.
-    HALF=1, FULL/SICK/EMERGENCY = 2 * duration_days."""
+    HALF=1, FULL/CASUAL/EMERGENCY = 2 * duration_days."""
     days = Decimal(leave.duration_days)
     if leave.leave_type == LeaveRequest.LeaveType.HALF_DAY:
         return Decimal('1')

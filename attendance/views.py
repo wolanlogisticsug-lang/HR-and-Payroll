@@ -69,13 +69,13 @@ class ClockInOutView(LoginRequiredMixin, View):
                     min_dist = d_dist
                     closest_loc_name = loc['name']
                     
-            if min_dist <= 100 and closest_loc_name:
+            if min_dist <= 250:
                 is_valid = True
                 location_name = closest_loc_name
             else:
                 return JsonResponse({
                     'success': False, 
-                    'message': 'You are not at an authorized AEC location. Please ensure you are on-site to Clock In/Out.'
+                    'message': 'You are not within the 250-meter radius of an authorized location. Please ensure you are on-site to Clock In/Out.'
                 }, status=400)
         else:
             # No GPS (desktop / laptop) → check IP whitelist

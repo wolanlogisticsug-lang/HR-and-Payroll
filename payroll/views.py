@@ -265,7 +265,7 @@ class SlipView(LoginRequiredMixin, View):
                 raise Http404("No employee profile found for your account.")
 
         payroll = Payroll.objects.filter(
-            profile__user__email=u.email, month__year=year, month__month=month
+            profile=profile, month__year=year, month__month=month
         ).order_by('-id').first()
         if not payroll:
             raise Http404("Payslip not generated for this month.")

@@ -80,13 +80,13 @@
                         <p class="text-sm font-medium text-slate-700 truncate">{{ profile.user.phone|default:"Not Provided" }}</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 flex-shrink-0 mt-0.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </div>
                     <div class="min-w-0 flex-1">
                         <p class="text-[10px] uppercase tracking-widest font-bold text-slate-400">Residential Address</p>
-                        <p class="text-sm font-medium text-slate-700">{{ profile.address|default:"Not Provided" }}</p>
+                        <p class="text-sm font-medium text-slate-700 break-words whitespace-normal">{{ profile.address|default:"Not Provided" }}</p>
                     </div>
                 </div>
             </div>
@@ -115,7 +115,7 @@
             {% endif %}
 
             {% if request.user.role == 'HR' or request.user.role == 'MD' %}
-            <form method="post" class="mt-2">
+            <form method="post" class="mt-2" data-allow-md>
                 {% csrf_token %}
                 <input type="hidden" name="action" value="assign_manager">
                 <label class="block text-[10px] uppercase tracking-widest font-bold text-slate-400 mb-1">
@@ -123,7 +123,7 @@
                 </label>
                 <div class="flex gap-2">
                     <select name="reporting_manager_id"
-                            class="flex-1 text-xs border border-slate-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white text-slate-700">
+                            class="flex-1 min-w-0 text-xs border border-slate-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white text-slate-700">
                         <option value="">— Remove / None —</option>
                         {% for emp in active_employees %}
                         <option value="{{ emp.pk }}"
@@ -133,7 +133,7 @@
                         {% endfor %}
                     </select>
                     <button type="submit"
-                            class="px-3 py-2 bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold rounded-lg transition">
+                            class="px-3 py-2 bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold rounded-lg transition" data-allow-md>
                         Save
                     </button>
                 </div>
@@ -314,7 +314,7 @@
                     </h4>
                     <p class="text-xs text-slate-500 mb-6">Enter your birthday, wedding anniversary, and hobbies. Automated congratulatory wishes and announcement alerts will be generated and dispatched on your special days.</p>
                     
-                    <form method="post" class="space-y-4">
+                    <form method="post" class="space-y-4" data-allow-md>
                         {% csrf_token %}
                         <input type="hidden" name="action" value="update_personal_details">
                         
@@ -363,7 +363,7 @@
                         
                         <div class="pt-3">
                             <button type="submit"
-                                class="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-indigo-100 transition duration-200">
+                                class="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-indigo-100 transition duration-200" data-allow-md>
                                 Save Personal Details
                             </button>
                         </div>
@@ -409,7 +409,7 @@
                         
                         <div class="pt-2">
                             <button type="submit"
-                                class="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-indigo-100 transition duration-200">
+                                class="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-indigo-100 transition duration-200" data-allow-md>
                                 Save Changes
                             </button>
                         </div>

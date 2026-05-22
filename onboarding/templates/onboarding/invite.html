@@ -3,11 +3,19 @@
 {% block title %}HR Invite - AEC Group{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-    <div class="mb-8">
-        <h2 class="text-2xl font-bold text-slate-900">Invite Candidate</h2>
-        <p class="text-slate-500 text-sm mt-1">Generate a secure 7-day onboarding link.</p>
+<div class="max-w-md mx-auto">
+    <div class="mb-4">
+        <a href="{% url 'onboarding:onboarding_dashboard' %}" class="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-800 transition">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Back to Onboarding Dashboard
+        </a>
     </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-slate-900">Invite Candidate</h2>
+            <p class="text-slate-500 text-sm mt-1">Generate a secure 7-day onboarding link.</p>
+        </div>
 
     <form method="post" class="space-y-6">
         {% csrf_token %}
@@ -31,5 +39,6 @@
             Generate & Send Invite
         </button>
     </form>
+</div>
 </div>
 {% endblock %}

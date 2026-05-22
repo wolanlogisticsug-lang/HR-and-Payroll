@@ -153,7 +153,7 @@
         <h3 class="font-semibold text-slate-900">Daily Log Book</h3>
         <p class="text-sm text-slate-500 mt-1">Log your daily work status & view department reports.</p>
     </a>
-    {% if request.user.role == 'HR' %}
+    {% if request.user.role == 'HR' or request.user.role == 'MD' %}
     <a href="{% url 'onboarding:staff_directory' %}" class="block bg-white border border-slate-200 rounded-xl p-6 hover:shadow-md hover:border-blue-300 transition">
         <div class="text-blue-600 mb-3"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
         <h3 class="font-semibold text-slate-900">Staff Directory</h3>
@@ -205,7 +205,7 @@
         <p class="text-sm text-slate-500 mt-1">Phones, SIMs, equipment & NOC.</p>
     </a>
     {% if request.user.role == 'HR' or request.user.role == 'MD' %}
-    <a href="{% url 'onboarding:invite_candidate' %}" class="block bg-white border border-slate-200 rounded-xl p-6 hover:shadow-md hover:border-blue-300 transition">
+    <a href="{% url 'onboarding:onboarding_dashboard' %}" class="block bg-white border border-slate-200 rounded-xl p-6 hover:shadow-md hover:border-blue-300 transition">
         <div class="text-indigo-600 mb-3"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg></div>
         <h3 class="font-semibold text-slate-900">Onboarding</h3>
         <p class="text-sm text-slate-500 mt-1">Invite & verify new candidates.</p>

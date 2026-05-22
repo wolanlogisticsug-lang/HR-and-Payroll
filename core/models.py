@@ -355,7 +355,7 @@ class LeaveRequest(models.Model):
     class LeaveType(models.TextChoices):
         FULL_DAY = 'FULL', 'Full Day'
         HALF_DAY = 'HALF', 'Half Day'
-        SICK = 'SICK', 'Sick Leave'
+        CASUAL = 'CASUAL', 'Casual Leave'
         EMERGENCY = 'EMERGENCY', 'Emergency'
 
     class Status(models.TextChoices):
