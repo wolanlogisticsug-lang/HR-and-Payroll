@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AEC HR SuperApp{% endblock %}</title>
+    <title>{% block title %}Wolan HR — Human Resource System{% endblock %}</title>
 
     <script>
         (function() { try {
-            var t = localStorage.getItem('aec_theme') || 'light';
+            var t = localStorage.getItem('wolan_hr_theme') || 'light';
             document.documentElement.setAttribute('data-theme', t);
         } catch(e) {} })();
     </script>
@@ -16,33 +16,121 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/zoho.css' %}">
 
     <style>
+        * { font-family: 'Sora', sans-serif; }
+
         body.md-readonly form:not([data-allow-md]) { display: none !important; }
         body.md-readonly button[type="submit"]:not([data-allow-md]) { display: none !important; }
         body.md-readonly a.action-btn { display: none !important; }
         body.md-readonly [data-md-hide] { display: none !important; }
         body.md-readonly form[data-allow-md] { display: inline !important; }
+
+        .zh-public-body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #3D1E6D 0%, #2a1550 45%, #1A73E8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .zh-public-body::before {
+            content: '';
+            position: absolute;
+            width: 500px; height: 500px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+            top: -150px; right: -100px;
+            pointer-events: none;
+        }
+        .zh-public-body::after {
+            content: '';
+            position: absolute;
+            width: 300px; height: 300px;
+            border-radius: 50%;
+            background: rgba(26,115,232,0.12);
+            bottom: -80px; left: -60px;
+            pointer-events: none;
+        }
+        .zh-public {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        .zh-public > div {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+        }
+        .zh-public-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 32px;
+        }
+        .zh-brand-mark {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #3D1E6D, #1A73E8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: -1px;
+            box-shadow: 0 4px 16px rgba(26,115,232,0.4);
+            flex-shrink: 0;
+        }
+        .zh-brand-text-main {
+            font-size: 20px;
+            font-weight: 800;
+            color: #3D1E6D;
+            letter-spacing: -0.02em;
+            line-height: 1;
+        }
+        .zh-brand-text-main span { color: #1A73E8; }
+        .zh-brand-text-sub {
+            font-size: 10px;
+            color: #9ca3af;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-top: 3px;
+        }
     </style>
 </head>
 <body class="antialiased zh-public-body">
     <div class="zh-public">
-        <div class="w-full" style="max-width:440px;">
+        <div>
             <div class="zh-public-brand">
-                <div class="zh-brand-mark" style="width:48px;height:48px;font-size:17px;border-radius:14px;">AE</div>
-                <div style="text-align:center;">
-                    <div style="font-size:18px;font-weight:700;color:var(--text-strong);letter-spacing:-.01em;">AEC Group</div>
-                    <div style="font-size:11px;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;font-weight:600;">HR SuperApp</div>
+                <div class="zh-brand-mark">W</div>
+                <div style="text-align:left;">
+                    <div class="zh-brand-text-main">Wolan <span>HR</span></div>
+                    <div class="zh-brand-text-sub">Human Resource System</div>
                 </div>
             </div>
 
             {% if messages %}
             <div class="mb-4 space-y-2">
                 {% for message in messages %}
-                <div class="p-3 rounded-lg text-sm border {% if message.tags == 'success' %}bg-green-50 text-green-800 border-green-200{% elif message.tags == 'error' %}bg-red-50 text-red-800 border-red-200{% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-800 border-yellow-200{% else %}bg-blue-50 text-blue-800 border-blue-200{% endif %}">
+                <div class="p-3 rounded-lg text-sm border
+                    {% if message.tags == 'success' %}bg-green-50 text-green-800 border-green-200
+                    {% elif message.tags == 'error' %}bg-red-50 text-red-800 border-red-200
+                    {% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-800 border-yellow-200
+                    {% else %}bg-blue-50 text-blue-800 border-blue-200{% endif %}">
                     {{ message }}
                 </div>
                 {% endfor %}
@@ -51,20 +139,28 @@
 
             {% block content %}{% endblock %}
 
-            <div class="mt-6 flex items-center justify-between text-xs" style="color:var(--text-muted);">
+            <div class="mt-6 flex items-center justify-between text-xs" style="color:#9ca3af;">
                 <form action="{% url 'set_language' %}" method="post" class="inline-flex items-center gap-2">
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{{ request.path }}">
-                    <select name="language" onchange="this.form.submit()" class="rounded-md px-2 py-1" style="background:var(--surface); border:1px solid var(--border); color:var(--text); font-size:11px;">
+                    <select name="language" onchange="this.form.submit()"
+                        style="background:#f9fafb;border:1px solid #e5e7eb;color:#374151;font-size:11px;padding:4px 8px;border-radius:6px;">
                         {% get_current_language as LANGUAGE_CODE %}
                         <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
                         <option value="ml" {% if LANGUAGE_CODE == 'ml' %}selected{% endif %}>മലയാളം</option>
                     </select>
                 </form>
-                <button onclick="zhToggleTheme()" class="inline-flex items-center gap-2 px-3 py-1 rounded-md" style="background:var(--surface);border:1px solid var(--border);" data-testid="theme-toggle-public">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <button onclick="zhToggleTheme()"
+                    style="background:#f9fafb;border:1px solid #e5e7eb;color:#6b7280;padding:4px 12px;border-radius:6px;display:inline-flex;align-items:center;gap:6px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
                     <span>{% trans "Theme" %}</span>
                 </button>
+            </div>
+
+            <div style="text-align:center;margin-top:20px;font-size:11px;color:#d1d5db;">
+                © 2026 Wolan HR · Wolan Logistics SMC Ltd
             </div>
         </div>
     </div>
@@ -74,7 +170,7 @@
             var cur = document.documentElement.getAttribute('data-theme') || 'light';
             var next = cur === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', next);
-            try { localStorage.setItem('aec_theme', next); } catch(e) {}
+            try { localStorage.setItem('wolan_hr_theme', next); } catch(e) {}
         }
     </script>
 </body>

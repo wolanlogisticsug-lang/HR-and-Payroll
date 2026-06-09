@@ -47,15 +47,15 @@ class ClockInOutView(LoginRequiredMixin, View):
 
         # 1. Validity: Strict Geofence for GPS
         is_valid = True
-        location_name = "AEC Group"
+        location_name = "wolan Hr"
         
         AUTHORIZED_LOCATIONS = [
-            {"name": "AEC Group", "lat": 9.967283003625232, "lon": 76.28662859325976},
-            {"name": "AEC Group", "lat": 9.967283003625232, "lon": 76.28662859325976},
-            {"name": "AEC Group", "lat": 9.967283003625232, "lon": 76.28662859325976},
-            {"name": "AEC Group", "lat": 9.498526389705322, "lon": 76.34305504232113},
-            {"name": "AEC Group", "lat": 9.506290068630923, "lon": 76.34089742310876},
-            {"name": "AEC Group", "lat": 9.506567290951638, "lon": 76.34080264948254},
+            {"name": "wolan Hr", "lat": 9.967283003625232, "lon": 76.28662859325976},
+            {"name": "wolan Hr", "lat": 9.967283003625232, "lon": 76.28662859325976},
+            {"name": "wolan Hr", "lat": 9.967283003625232, "lon": 76.28662859325976},
+            {"name": "wolan Hr", "lat": 9.498526389705322, "lon": 76.34305504232113},
+            {"name": "wolan Hr", "lat": 9.506290068630923, "lon": 76.34089742310876},
+            {"name": "wolan Hr", "lat": 9.506567290951638, "lon": 76.34080264948254},
         ]
         
         if lat and lon:

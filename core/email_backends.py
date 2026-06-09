@@ -23,7 +23,7 @@ class BrevoEmailBackend(BaseEmailBackend):
                 if not sender_email:
                     sender_email = message.from_email
                 if not sender_name:
-                    sender_name = "AEC HR"
+                    sender_name = "wolan Hr HR"
 
                 sender_payload = {"name": sender_name, "email": sender_email}
 

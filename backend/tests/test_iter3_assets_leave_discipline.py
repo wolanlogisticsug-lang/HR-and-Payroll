@@ -12,7 +12,7 @@ import pytest
 
 # Bootstrap Django
 sys.path.insert(0, '/app')
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'aec_hr_superapp.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wolan Hr_hr_superapp.settings')
 django.setup()
 
 from django.test import Client
@@ -30,7 +30,7 @@ from payroll import service as payroll_service
 from attendance.signals import _process_late_check
 
 
-HR = 'hr_aec'
+HR = 'hr_wolan Hr'
 HR_PASS = 'hrpassword123'
 
 
@@ -311,7 +311,7 @@ class TestLeaveRedirect:
             status=LeaveRequest.Status.PENDING,
         )
         # Redirect to MD
-        md = User.objects.get(username='md_aec')
+        md = User.objects.get(username='md_wolan Hr')
         r = hr_client.post(f'/leave/{leave.pk}/decision/', {
             'action': 'redirect', 'redirect_to': str(md.pk),
         }, follow=True)
@@ -322,7 +322,7 @@ class TestLeaveRedirect:
         assert AuditLog.objects.filter(
             profile=u.employee_profile,
             details__pk=leave.pk,
-        ).filter(details__redirected_to='md_aec').exists()
+        ).filter(details__redirected_to='md_wolan Hr').exists()
         leave.delete()
 
 

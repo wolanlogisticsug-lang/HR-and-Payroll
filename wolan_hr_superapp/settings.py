@@ -1,6 +1,6 @@
 """
-Django settings for aec_hr_superapp project.
-AEC Group HR & Payroll Super App
+Django settings for wolan_hr_superapp project.
+Wolan HR & Payroll Super App
 """
 import os
 from pathlib import Path
@@ -15,7 +15,7 @@ socket.getaddrinfo = getaddrinfo_ipv4
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-aec-hr-dev-key-change-in-production')
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-wolan-hr-dev-key-change-in-production')
 DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
 
@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 # django-q2 — real worker via supervisor (program:qcluster). sync=True only
 # kicks in if the worker is unavailable (allows tests to keep working).
 Q_CLUSTER = {
-    'name': 'aec_hr',
+    'name': 'wolan_hr',
     'workers': 2,
     'recycle': 500,
     'timeout': 60,
@@ -68,7 +68,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'aec_hr_superapp.urls'
+ROOT_URLCONF = 'wolan_hr_superapp.urls'
 
 TEMPLATES = [
     {
@@ -90,13 +90,15 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'aec_hr_superapp.wsgi.application'
+WSGI_APPLICATION = 'wolan_hr_superapp.wsgi.application'
 
+# --- FIXED & REPAIRED DATABASE SECTION ---
 DATABASE_URL = config('DATABASE_URL')
 import dj_database_url
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, conn_health_checks=True)
 }
+# ------------------------------------------
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -185,6 +187,3 @@ else:
 
 # Deprecated setting added for backward compatibility with django-cloudinary-storage under Django 6.0
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-
-
-

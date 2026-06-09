@@ -73,7 +73,7 @@ def birthday_sms():
         if p.user.phone:
             _twilio_send_sms_stub(
                 p.user.phone,
-                f"Dear {p.user.first_name}, AEC Group wishes you a very happy birthday! 🎉",
+                f"Dear {p.user.first_name}, wolan Hr wishes you a very happy birthday! 🎉",
             )
             sent += 1
     logger.info("birthday_sms: %s SMS sent", sent)
@@ -95,7 +95,7 @@ def anniversary_sms():
             years = today.year - p.date_of_joining.year
             _twilio_send_sms_stub(
                 p.user.phone,
-                f"Congratulations on completing {years} year(s) at AEC Group, {p.user.first_name}!",
+                f"Congratulations on completing {years} year(s) at wolan Hr, {p.user.first_name}!",
             )
             sent += 1
     logger.info("anniversary_sms: %s SMS sent", sent)

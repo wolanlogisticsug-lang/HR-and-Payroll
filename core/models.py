@@ -1,5 +1,5 @@
 """
-AEC HR Super App — Core Models
+wolan Hr HR Super App — Core Models
 All foundational models: User, Department, EmployeeProfile,
 Attendance, LeaveRequest, Incentive, Payroll, AuditLog.
 """
@@ -65,7 +65,7 @@ class User(AbstractUser):
 # ──────────────────────────────────────────────────────────────
 class Department(models.Model):
     """
-    AEC Group business unit. Each has geofence coords and custom
+    wolan Hr business unit. Each has geofence coords and custom
     work-day configuration. Cinema/Residency include Sundays.
     """
     DEFAULT_WORK_DAYS = [0, 1, 2, 3, 4, 5]  # Mon-Sat
@@ -150,7 +150,7 @@ class EmployeeProfile(models.Model):
     )
     employee_id = models.CharField(
         max_length=20, unique=True, blank=True,
-        help_text='Auto-generated employee ID (e.g., AEC-CIN-001)'
+        help_text='Auto-generated employee ID (e.g., wolan Hr-CIN-001)'
     )
     department = models.ForeignKey(
         Department,
@@ -259,7 +259,7 @@ class EmployeeProfile(models.Model):
         count = EmployeeProfile.objects.filter(
             department=self.department
         ).count() + 1
-        return f"AEC-{dept_code}-{count:03d}"
+        return f"wolan Hr-{dept_code}-{count:03d}"
 
 
 # ──────────────────────────────────────────────────────────────

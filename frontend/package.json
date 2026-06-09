@@ -1,5 +1,5 @@
 {
-  "name": "aec-hr-frontend-shim",
+  "name": "wolan Hr-hr-frontend-shim",
   "version": "1.0.0",
   "private": true,
   "description": "Shim that runs Django (templates) on port 3000 so the public preview URL serves the Django app.",

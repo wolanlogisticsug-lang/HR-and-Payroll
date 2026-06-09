@@ -1,7 +1,7 @@
 """
 PayrollService: pure-Python computation logic.
 
-AEC Group Payroll Rules (STRICT):
+wolan Hr Payroll Rules (STRICT):
 - DAILY_RATE   = basic_salary / 30  (FIXED divisor — never use month length)
 - HOURLY_RATE  = daily_rate / 8     (8-hour work day assumed)
 - BASIC_EARNED = daily_rate * days_present

@@ -50,3 +50,18 @@ class InviteToken(models.Model):
 
     def __str__(self):
         return f"{self.email} - {'Used' if self.is_used else 'Pending'}"
+class BiometricDevice(models.Model):
+    DEVICE_CHOICES = [
+        ('zkteco', 'ZKTeco Terminal'),
+        ('hikvision', 'Hikvision Terminal'),
+    ]
+    name = models.CharField(max_length=100, unique=True)
+    device_type = models.CharField(max_length=20, choices=DEVICE_CHOICES)
+    ip_address = models.GenericIPAddressField()
+    port = models.IntegerField(default=4370)
+    is_active = models.BooleanField(default=True)
+    last_sync_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} [{self.device_type}] - {self.ip_address}"

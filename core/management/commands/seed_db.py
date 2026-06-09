@@ -17,14 +17,14 @@ class Command(BaseCommand):
         kochi_lon = Decimal('76.267303')
 
         departments_data = [
-            {'name': 'AEC Cinemas', 'code': 'CIN', 'is_cinema': True, 'work_days': '0,1,2,3,4,5,6'},
+            {'name': 'wolan Hr Cinemas', 'code': 'CIN', 'is_cinema': True, 'work_days': '0,1,2,3,4,5,6'},
             {'name': 'Bytes Caffe', 'code': 'CAF', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
-            {'name': 'AEC Residency', 'code': 'RES', 'is_cinema': False, 'work_days': '0,1,2,3,4,5,6'},
-            {'name': 'AEC Studies Pvt Ltd', 'code': 'EDU', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
-            {'name': 'AEC Institute of Advanced Studies', 'code': 'INS', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
-            {'name': 'AEC Pixel Perfect Pvt Ltd', 'code': 'PIX_IT', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
-            {'name': 'AEC Enclave OPC Pvt Ltd', 'code': 'ENCLAVE', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
-            {'name': 'AEC Travel and Leisure Solutions Pvt Limited', 'code': 'TLS', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
+            {'name': 'wolan Hr Residency', 'code': 'RES', 'is_cinema': False, 'work_days': '0,1,2,3,4,5,6'},
+            {'name': 'wolan Hr Studies Pvt Ltd', 'code': 'EDU', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
+            {'name': 'wolan Hr Institute of Advanced Studies', 'code': 'INS', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
+            {'name': 'wolan Hr Pixel Perfect Pvt Ltd', 'code': 'PIX_IT', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
+            {'name': 'wolan Hr Enclave OPC Pvt Ltd', 'code': 'ENCLAVE', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
+            {'name': 'wolan Hr Travel and Leisure Solutions Pvt Limited', 'code': 'TLS', 'is_cinema': False, 'work_days': '0,1,2,3,4,5'},
         ]
 
         depts = {}
@@ -44,10 +44,10 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f"Created department: {dept.name}"))
 
         # 2. Create MD User
-        if not User.objects.filter(username='md_aec').exists():
+        if not User.objects.filter(username='md_wolan Hr').exists():
             md_user = User.objects.create_superuser(
-                username='md_aec',
-                email='md@aecgroup.in',
+                username='md_wolan Hr',
+                email='md@wolan Hrgroup.in',
                 password='adminpassword123',
                 first_name='Managing',
                 last_name='Director'
@@ -64,13 +64,13 @@ class Command(BaseCommand):
                 basic_salary=Decimal('100000.00'),
                 is_locked=True
             )
-            self.stdout.write(self.style.SUCCESS("Created MD User (md_aec / adminpassword123)"))
+            self.stdout.write(self.style.SUCCESS("Created MD User (md_wolan Hr / adminpassword123)"))
 
         # 3. Create HR User
-        if not User.objects.filter(username='hr_aec').exists():
+        if not User.objects.filter(username='hr_wolan Hr').exists():
             hr_user = User.objects.create_user(
-                username='hr_aec',
-                email='hr@aecgroup.in',
+                username='hr_wolan Hr',
+                email='hr@wolan Hrgroup.in',
                 password='hrpassword123',
                 first_name='HR',
                 last_name='Manager'
@@ -88,6 +88,6 @@ class Command(BaseCommand):
                 basic_salary=Decimal('50000.00'),
                 is_locked=True
             )
-            self.stdout.write(self.style.SUCCESS("Created HR User (hr_aec / hrpassword123)"))
+            self.stdout.write(self.style.SUCCESS("Created HR User (hr_wolan Hr / hrpassword123)"))
 
         self.stdout.write(self.style.SUCCESS("Database seeding completed successfully!"))

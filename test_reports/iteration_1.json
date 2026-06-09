@@ -1,5 +1,5 @@
 {
-  "summary": "Tested AEC HR SuperApp Prompt 3 (Attendance) + Prompt 4 (Payroll). All backend pytest cases (17/17), Django shell unit checks (PT slabs, generate_for_profile, Cinema skip-late), and HTTP integration flows (login, generate, approve, finalize, slip PDF, incentive add) PASS. Frontend Playwright check confirms login, dashboard tiles, payroll page, tax page, attendance clock + dashboard all render with all required data-testid attributes.",
+  "summary": "Tested wolan Hr HR SuperApp Prompt 3 (Attendance) + Prompt 4 (Payroll). All backend pytest cases (17/17), Django shell unit checks (PT slabs, generate_for_profile, Cinema skip-late), and HTTP integration flows (login, generate, approve, finalize, slip PDF, incentive add) PASS. Frontend Playwright check confirms login, dashboard tiles, payroll page, tax page, attendance clock + dashboard all render with all required data-testid attributes.",
   "backend_issues": {
     "critical": [],
     "minor": []
@@ -12,7 +12,7 @@
     ]
   },
   "test_report_links": [
-    "/app/backend/tests/test_aec_hr_superapp.py",
+    "/app/backend/tests/test_wolan Hr_hr_superapp.py",
     "/app/backend/tests/test_approve_finalize_flow.py",
     "/app/test_reports/pytest/pytest_results.xml"
   ],
@@ -30,10 +30,10 @@
   ],
   "updated_files": [],
   "success_rate": {"backend": "100%", "frontend": "100%"},
-  "test_credentials": "MD: md_aec/adminpassword123, HR: hr_aec/hrpassword123",
+  "test_credentials": "MD: md_wolan Hr/adminpassword123, HR: hr_wolan Hr/hrpassword123",
   "seed_data_creation": "Seeded 22 Attendance rows for HR in Aug 2026 (10h shifts) + 1 CIN attendance row to validate skip-late + 1 Aug 2026 incentive (BONUS 500) for HR via /payroll/incentive/add/. Payroll pk=5 (HR Aug 2026) was approved then finalized (is_locked=True).",
   "retest_needed": false,
   "main_agent_can_self_test": true,
-  "context_for_next_testing_agent": "Backend tests live in /app/backend/tests/. Run with: cd /app && /root/.venv/bin/python -m pytest backend/tests/test_aec_hr_superapp.py -v. Approve/finalize flow is a standalone script (not pytest) at /app/backend/tests/test_approve_finalize_flow.py — note it finalizes HR Aug-2026 payroll (pk=5) which becomes is_locked. Re-running it is safe because subsequent approve attempts return early with 'already finalized' warning; you may need a fresh DB or different month for full re-run. PT spec assertion (₹30k basic in Aug → PT=₹1250) verified via shell.",
+  "context_for_next_testing_agent": "Backend tests live in /app/backend/tests/. Run with: cd /app && /root/.venv/bin/python -m pytest backend/tests/test_wolan Hr_hr_superapp.py -v. Approve/finalize flow is a standalone script (not pytest) at /app/backend/tests/test_approve_finalize_flow.py — note it finalizes HR Aug-2026 payroll (pk=5) which becomes is_locked. Re-running it is safe because subsequent approve attempts return early with 'already finalized' warning; you may need a fresh DB or different month for full re-run. PT spec assertion (₹30k basic in Aug → PT=₹1250) verified via shell.",
   "rca of the issue": "No issues found. Both Prompt 3 (Attendance) and Prompt 4 (Payroll) are complete and meet all spec assertions including Cinema skip-late and Kerala PT half-yearly slabs."
 }

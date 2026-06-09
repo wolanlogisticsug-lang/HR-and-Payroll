@@ -1,6 +1,6 @@
 """
 Management command: seed_demo_data
-Creates realistic sample data across all AEC HR app modules.
+Creates realistic sample data across all wolan Hr HR app modules.
 Usage: python manage.py seed_demo_data
 """
 from django.core.management.base import BaseCommand
@@ -13,7 +13,7 @@ class Command(BaseCommand):
     help = 'Seeds the database with realistic demo data for all modules.'
 
     def handle(self, *args, **kwargs):
-        self.stdout.write(self.style.MIGRATE_HEADING('\n=== AEC HR Superapp — Demo Data Seeder ===\n'))
+        self.stdout.write(self.style.MIGRATE_HEADING('\n=== wolan Hr HR Superapp — Demo Data Seeder ===\n'))
         self._seed_departments()
         self._seed_users()
         self._seed_profiles()
@@ -25,10 +25,10 @@ class Command(BaseCommand):
     def _seed_departments(self):
         from core.models import Department
         dept_names = [
-            'AEC Cinemas', 'Bytes Caffe', 'AEC Residency',
-            'AEC Studies Pvt Ltd', 'AEC Institute of Advanced Studies', 
-            'AEC Pixel Perfect Pvt Ltd', 'AEC Enclave OPC Pvt Ltd',
-            'AEC Travel and Leisure Solutions Pvt Limited'
+            'wolan Hr Cinemas', 'Bytes Caffe', 'wolan Hr Residency',
+            'wolan Hr Studies Pvt Ltd', 'wolan Hr Institute of Advanced Studies', 
+            'wolan Hr Pixel Perfect Pvt Ltd', 'wolan Hr Enclave OPC Pvt Ltd',
+            'wolan Hr Travel and Leisure Solutions Pvt Limited'
         ]
         for name in dept_names:
             Department.objects.get_or_create(name=name)
@@ -55,7 +55,7 @@ class Command(BaseCommand):
             if not User.objects.filter(username=uname).exists():
                 u = User.objects.create_user(
                     username=uname,
-                    email=f'{uname}@aecgroup.in',
+                    email=f'{uname}@wolan Hrgroup.in',
                     password='demo@1234',
                     first_name=first,
                     last_name=last,

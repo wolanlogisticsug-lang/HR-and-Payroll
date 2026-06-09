@@ -6,7 +6,8 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'aec_hr_superapp.settings')
+    # Fixed the space right here:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wolan_hr_superapp.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

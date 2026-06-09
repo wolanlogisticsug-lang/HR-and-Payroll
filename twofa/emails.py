@@ -13,7 +13,7 @@ def send_html_mail(subject, template_name, context, to, from_email=None, attachm
     to:            list of recipient emails
     """
     from django.conf import settings
-    from_email = from_email or f"AEC HR <{settings.DEFAULT_FROM_EMAIL}>"
+    from_email = from_email or f"wolan Hr HR <{settings.DEFAULT_FROM_EMAIL}>"
     html_body = render_to_string(template_name, context)
     text_body = strip_tags(html_body)
     msg = EmailMultiAlternatives(str(subject), text_body, from_email, to)

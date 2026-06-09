@@ -3,7 +3,7 @@ import django
 from datetime import date, timedelta
 import random
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'aec_hr_superapp.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wolan Hr_hr_superapp.settings')
 django.setup()
 
 from core.models import User, Department, EmployeeProfile, Attendance
@@ -53,7 +53,7 @@ def generate_samples():
                 onboarding_status='COMPLETED',
                 date_of_joining=joining_date,
             )
-            profile.employee_id = f"AEC-{dept.code}-{uuid.uuid4().hex[:6].upper()}"
+            profile.employee_id = f"wolan Hr-{dept.code}-{uuid.uuid4().hex[:6].upper()}"
             profile.save()
             
             # Only create attendance for active employees to test payroll
@@ -75,7 +75,7 @@ def generate_samples():
                             in_time=in_dt,
                             out_time=out_dt,
                             is_valid=True,
-                            location_name="AEC Group"
+                            location_name="wolan Hr"
                         )
 
 if __name__ == '__main__':

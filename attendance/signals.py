@@ -107,7 +107,7 @@ def _escalate_discipline(att, late_min):
     
     if recipients:
         send_html_mail(
-            subject=f"[AEC HR] Late attendance — {profile.user.get_full_name()} (#{n} this month)",
+            subject=f"[wolan Hr HR] Late attendance — {profile.user.get_full_name()} (#{n} this month)",
             template_name='email/late_warning.html',
             context={
                 'profile': profile, 'attendance': att,

@@ -9,7 +9,7 @@ def login(u,p):
     s.post(BASE+'/accounts/login/', data={'username':u,'password':p,'csrfmiddlewaretoken':csrf,'next':'/dashboard/'})
     return s
 
-md=login('md_aec','adminpassword123')
+md=login('md_wolan Hr','adminpassword123')
 
 # Get fresh CSRF
 r=md.get(BASE+'/payroll/?year=2026&month=8')

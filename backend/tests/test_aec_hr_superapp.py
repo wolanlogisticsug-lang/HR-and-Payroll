@@ -1,4 +1,4 @@
-"""End-to-end backend tests for AEC HR SuperApp (Django session-based)."""
+"""End-to-end backend tests for wolan Hr HR SuperApp (Django session-based)."""
 import os
 import re
 import pytest
@@ -12,8 +12,8 @@ BASE_URL = os.environ.get(
 
 LOGIN_URL = f"{BASE_URL}/accounts/login/"
 
-MD = ("md_aec", "adminpassword123")
-HR = ("hr_aec", "hrpassword123")
+MD = ("md_wolan Hr", "adminpassword123")
+HR = ("hr_wolan Hr", "hrpassword123")
 
 
 def _login(username, password):

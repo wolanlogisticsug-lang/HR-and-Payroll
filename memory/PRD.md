@@ -1,4 +1,4 @@
-# AEC HR SuperApp — Zoho-style UI Redesign
+# wolan Hr HR SuperApp — Zoho-style UI Redesign
 
 ## Original Problem
 > "give this app a Zoho-style UI."
@@ -20,7 +20,7 @@ User-confirmed choices (Jan 2026):
 - `/app/onboarding/templates/onboarding/base.html` — authenticated shell with collapsible left sidebar (Dashboard, Attendance, Leave, Payroll, Onboarding, Assets & NOC, Mailers, Clock In/Out), search-trigger topbar, language/theme/notifications/user-chip + dropdown menu. Active-state via path matching.
 - `/app/templates/registration/_base.html` — public auth shell (login/signup extend this).
 - Restyled `login.html`, `signup.html`, `setup.html`.
-- Theme toggle (`localStorage.aec_theme`) applied before paint to avoid FOUC.
+- Theme toggle (`localStorage.wolan Hr_theme`) applied before paint to avoid FOUC.
 - `data-testid` on every new interactive element.
 
 ## Done — Session 2 (P1 features)

@@ -1,5 +1,5 @@
 """
-URL configuration for aec_hr_superapp project.
+URL configuration for wolan Hr_hr_superapp project.
 """
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
@@ -158,7 +158,7 @@ urlpatterns = [
     path('reimbursements/', reimbursements_view, name='reimbursements'),
     path('tasks/', tasks_view, name='tasks'),
     
-    # AEC Super App Modules
+    # wolan Hr Super App Modules
     path('onboarding/', include('onboarding.urls')),
     path('attendance/', include('attendance.urls')),
     path('payroll/', include('payroll.urls')),
@@ -177,3 +177,8 @@ urlpatterns += [
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Wolan HR Admin Customization Settings
+admin.site.site_header = "Wolan HR Admin Portal"
+admin.site.site_title = "Wolan HR"
+admin.site.index_title = "Welcome to Wolan HR Management System"

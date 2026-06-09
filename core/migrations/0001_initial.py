@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
             name='EmployeeProfile',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('employee_id', models.CharField(blank=True, help_text='Auto-generated employee ID (e.g., AEC-CIN-001)', max_length=20, unique=True)),
+                ('employee_id', models.CharField(blank=True, help_text='Auto-generated employee ID (e.g., wolan Hr-CIN-001)', max_length=20, unique=True)),
                 ('personal_account', models.CharField(blank=True, help_text='Personal bank account (probation salary)', max_length=30)),
                 ('salary_account', models.CharField(blank=True, help_text='Salary bank account (permanent salary)', max_length=30)),
                 ('docs_vault', models.JSONField(blank=True, default=dict, help_text='Document storage: academic, ID, experience, salary slips, photo')),

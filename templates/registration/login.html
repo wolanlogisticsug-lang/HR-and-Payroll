@@ -1,20 +1,22 @@
 {% extends 'onboarding/base.html' %}
 {% load static %}
 
-{% block title %}Login - AEC HR SuperApp{% endblock %}
+{% block title %}Login - Wolan HR SuperApp{% endblock %}
 
 {% block content %}
 <div class="min-h-[60vh] flex items-center justify-center">
     <div class="max-w-md w-full bg-white rounded-xl shadow-sm border border-slate-200 p-8" data-testid="login-card">
         <div class="mb-8 text-center">
-            <div class="flex justify-center mb-4">
-                <img src="{% static 'logo.png' %}" alt="AEC Group Logo" class="h-16 w-auto">
+            
+            <div class="flex justify-center mb-2">
+                <span class="text-3xl font-black tracking-tight text-blue-600">Wolan <span class="text-slate-900">HR</span></span>
             </div>
+            
             <div class="flex items-center justify-center gap-2 mb-1">
-                <span class="text-[11px] font-semibold text-slate-700 tracking-[0.2em] uppercase">HR APP</span>
+                <span class="text-[11px] font-semibold text-slate-400 tracking-[0.2em] uppercase">SUPERAPP</span>
             </div>
-            <h2 class="text-2xl font-bold text-slate-900">Welcome back</h2>
-            <p class="text-slate-500 text-sm mt-1">Sign in to AEC Group Portal</p>
+            <h2 class="text-2xl font-bold text-slate-900 mt-4">Welcome back</h2>
+            <p class="text-slate-500 text-sm mt-1">Sign in to Wolan HR Portal</p>
         </div>
 
         {% if form.errors %}
@@ -48,8 +50,6 @@
                 Login
             </button>
         </form>
-
-
 
     </div>
 </div>

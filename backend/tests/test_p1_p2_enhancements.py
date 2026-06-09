@@ -1,5 +1,5 @@
 """
-P1+P2 backend integration tests for AEC HR SuperApp.
+P1+P2 backend integration tests for wolan Hr HR SuperApp.
 
 Covers:
   - Leave: list, create, decision (approve/reject), cancel
@@ -22,8 +22,8 @@ import requests
 
 BASE_URL = "https://489d41fa-fbc6-49f2-9560-ced4ced3827a.preview.emergentagent.com"
 
-HR = ("hr_aec", "hrpassword123")
-MD = ("md_aec", "adminpassword123")
+HR = ("hr_wolan Hr", "hrpassword123")
+MD = ("md_wolan Hr", "adminpassword123")
 
 
 # ---------- Helpers ---------- #
@@ -90,7 +90,7 @@ class TestQClusterAndSchedule:
 
     def test_28th_payroll_schedule_registered(self):
         script = (
-            "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); "
+            "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); "
             "django.setup(); "
             "from django_q.models import Schedule; "
             "s = Schedule.objects.filter(name='payroll-monthly-28th').first(); "
@@ -138,7 +138,7 @@ class TestLeaveFlows:
         # Find the new pending pk via shell (LeaveRequest has Meta.ordering=['-created_at'],
         # so we explicitly order_by('-pk') to grab the most-recently inserted row)
         find_pk = (
-            "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); "
+            "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); "
             "django.setup(); "
             "from core.models import LeaveRequest; "
             f"lr = LeaveRequest.objects.filter(reason='{unique}').order_by('-pk').first(); "
@@ -157,7 +157,7 @@ class TestLeaveFlows:
 
         # Verify status APPROVED + AuditLog created
         verify = (
-            "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); "
+            "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); "
             "django.setup(); "
             "from core.models import LeaveRequest, AuditLog; "
             f"lr = LeaveRequest.objects.get(pk={pk}); "
@@ -177,7 +177,7 @@ class TestLeaveFlows:
         })
         assert r.status_code in (302, 303)
         find_pk = (
-            "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); "
+            "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); "
             "django.setup(); from core.models import LeaveRequest; "
             f"lr = LeaveRequest.objects.filter(reason='{unique}').order_by('-pk').first(); "
             "print(lr.pk)"
@@ -189,7 +189,7 @@ class TestLeaveFlows:
         r = _csrf_post(hr_session, f"/leave/{pk}/cancel/", {})
         assert r.status_code in (302, 303)
         verify = (
-            "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); "
+            "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); "
             "django.setup(); from core.models import LeaveRequest; "
             f"print(LeaveRequest.objects.get(pk={pk}).status)"
         )
@@ -226,9 +226,9 @@ class TestDocumentVault:
     def test_unlock_then_relock_persists(self, hr_session):
         # Find any non-MD/HR locked profile (pk)
         find = (
-            "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); "
+            "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); "
             "django.setup(); from core.models import EmployeeProfile; "
-            "p = EmployeeProfile.objects.exclude(user__username__in=['md_aec','hr_aec']).filter(user__is_active=True).first(); "
+            "p = EmployeeProfile.objects.exclude(user__username__in=['md_wolan Hr','hr_wolan Hr']).filter(user__is_active=True).first(); "
             "print(p.pk if p else 0, p.is_locked if p else '')"
         )
         out = subprocess.run(["/root/.venv/bin/python", "-c", find],
@@ -241,14 +241,14 @@ class TestDocumentVault:
         r = _csrf_post(hr_session, f"/onboarding/unlock/{pk}/", {"action": "unlock"})
         assert r.status_code in (302, 303)
         v = subprocess.run(["/root/.venv/bin/python", "-c",
-                            f"import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); django.setup(); from core.models import EmployeeProfile; print(EmployeeProfile.objects.get(pk={pk}).is_locked)"],
+                            f"import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); django.setup(); from core.models import EmployeeProfile; print(EmployeeProfile.objects.get(pk={pk}).is_locked)"],
                            capture_output=True, text=True, cwd="/app", timeout=20)
         assert "False" in v.stdout, f"unlock not persisted: {v.stdout}"
 
         r = _csrf_post(hr_session, f"/onboarding/unlock/{pk}/", {"action": "relock"})
         assert r.status_code in (302, 303)
         v = subprocess.run(["/root/.venv/bin/python", "-c",
-                            f"import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); django.setup(); from core.models import EmployeeProfile; print(EmployeeProfile.objects.get(pk={pk}).is_locked)"],
+                            f"import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); django.setup(); from core.models import EmployeeProfile; print(EmployeeProfile.objects.get(pk={pk}).is_locked)"],
                            capture_output=True, text=True, cwd="/app", timeout=20)
         assert "True" in v.stdout
 
@@ -334,10 +334,10 @@ class TestMd2FA:
         """
         # Always reset: delete any confirmed devices first
         reset_script = (
-            "import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); django.setup(); "
+            "import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); django.setup(); "
             "from django_otp.plugins.otp_totp.models import TOTPDevice; "
             "from core.models import User; "
-            "u = User.objects.get(username='md_aec'); "
+            "u = User.objects.get(username='md_wolan Hr'); "
             "TOTPDevice.objects.filter(user=u).delete(); "
             "print('reset')"
         )
@@ -361,11 +361,11 @@ class TestMd2FA:
 
         # Generate a valid TOTP token via shell using the unconfirmed device
         token_script = (
-            "import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); django.setup(); "
+            "import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); django.setup(); "
             "from django_otp.plugins.otp_totp.models import TOTPDevice; "
             "from django_otp.oath import totp as _totp; "
             "from core.models import User; "
-            "u = User.objects.get(username='md_aec'); "
+            "u = User.objects.get(username='md_wolan Hr'); "
             "d = TOTPDevice.objects.filter(user=u, confirmed=False).first(); "
             "tok = _totp(d.bin_key, step=d.step, t0=d.t0, digits=d.digits); "
             "print(f'{tok:0{d.digits}d}')"
@@ -382,14 +382,14 @@ class TestMd2FA:
         # Confirm /dashboard/ now reachable
         r = s.get(f"{BASE_URL}/dashboard/", timeout=15)
         assert r.status_code == 200
-        assert b"Dashboard" in r.content or b"AEC" in r.content
+        assert b"Dashboard" in r.content or b"wolan Hr" in r.content
 
         # Verify a confirmed device exists
         check = subprocess.run(["/root/.venv/bin/python", "-c",
-                                "import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); django.setup(); "
+                                "import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); django.setup(); "
                                 "from django_otp.plugins.otp_totp.models import TOTPDevice; "
                                 "from core.models import User; "
-                                "print(TOTPDevice.objects.filter(user__username='md_aec', confirmed=True).count())"],
+                                "print(TOTPDevice.objects.filter(user__username='md_wolan Hr', confirmed=True).count())"],
                                capture_output=True, text=True, cwd="/app", timeout=20)
         assert "1" in check.stdout
 
@@ -419,9 +419,9 @@ class TestMd2FA:
         # records last_t to prevent token replay; an integration test needs to
         # bypass this safely without waiting for the next 30s window).
         reset_lastt = (
-            "import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); django.setup(); "
+            "import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); django.setup(); "
             "from django_otp.plugins.otp_totp.models import TOTPDevice; "
-            "TOTPDevice.objects.filter(user__username='md_aec', confirmed=True).update(last_t=-1, throttling_failure_count=0); "
+            "TOTPDevice.objects.filter(user__username='md_wolan Hr', confirmed=True).update(last_t=-1, throttling_failure_count=0); "
             "print('reset')"
         )
         subprocess.run(["/root/.venv/bin/python", "-c", reset_lastt],
@@ -429,11 +429,11 @@ class TestMd2FA:
 
         # Valid token
         token_script = (
-            "import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); django.setup(); "
+            "import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); django.setup(); "
             "from django_otp.plugins.otp_totp.models import TOTPDevice; "
             "from django_otp.oath import totp as _totp; "
             "from core.models import User; "
-            "d = TOTPDevice.objects.filter(user__username='md_aec', confirmed=True).first(); "
+            "d = TOTPDevice.objects.filter(user__username='md_wolan Hr', confirmed=True).first(); "
             "tok = _totp(d.bin_key, step=d.step, t0=d.t0, digits=d.digits); "
             "print(f'{tok:0{d.digits}d}')"
         )
@@ -447,10 +447,10 @@ class TestMd2FA:
 
         # Cleanup: delete TOTP devices so other test runs / MD login flow stays clean
         reset = (
-            "import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','aec_hr_superapp.settings'); django.setup(); "
+            "import django,os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','wolan Hr_hr_superapp.settings'); django.setup(); "
             "from django_otp.plugins.otp_totp.models import TOTPDevice; "
             "from core.models import User; "
-            "TOTPDevice.objects.filter(user__username='md_aec').delete(); print('cleaned')"
+            "TOTPDevice.objects.filter(user__username='md_wolan Hr').delete(); print('cleaned')"
         )
         subprocess.run(["/root/.venv/bin/python", "-c", reset],
                        capture_output=True, text=True, cwd="/app", timeout=20)

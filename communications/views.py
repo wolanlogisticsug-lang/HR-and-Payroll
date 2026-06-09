@@ -183,7 +183,7 @@ def offer_preview(request, offer_id):
             try:
                 from twofa.emails import send_html_mail
                 send_html_mail(
-                    subject=f"AEC Group – Official Offer Letter: {offer.designation}",
+                    subject=f"wolan Hr – Official Offer Letter: {offer.designation}",
                     template_name='communications/email_offer_letter.html',
                     context={'offer': offer, 'accept_url': accept_url},
                     to=[offer.candidate_email],
@@ -408,7 +408,7 @@ def verify_acceptance(request, mail_id):
         if not profile.employee_id:
             import uuid
             dept_code = profile.department.code if profile.department and profile.department.code else "GEN"
-            employee_id = f"AEC-{dept_code}-{uuid.uuid4().hex[:6].upper()}"
+            employee_id = f"wolan Hr-{dept_code}-{uuid.uuid4().hex[:6].upper()}"
             profile.employee_id = employee_id
         else:
             employee_id = profile.employee_id
@@ -494,8 +494,8 @@ def generate_promotion_letter(request):
                 f"{employee.department.name} department.\n\n"
                 f"Your revised monthly basic salary will be ₹{new_salary}.\n\n"
                 f"We congratulate you on this well-deserved recognition and look forward to your "
-                f"continued contributions to AEC Group.\n\n"
-                f"Regards,\nHuman Resources\nAEC Group"
+                f"continued contributions to wolan Hr.\n\n"
+                f"Regards,\nHuman Resources\nwolan Hr"
             )
             InternalMail.objects.create(
                 sender=request.user,

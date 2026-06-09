@@ -1,5 +1,5 @@
 {% extends 'onboarding/base.html' %}
-{% block title %}Preview Offer Letter - AEC Group{% endblock %}
+{% block title %}Preview Offer Letter - wolan Hr{% endblock %}
 {% block page_title %}Offer Letter Preview{% endblock %}
 
 {% block content %}
@@ -27,7 +27,7 @@
 
         <!-- Letter header -->
         <div class="bg-gradient-to-r from-blue-700 to-blue-500 px-10 py-8 text-center text-white">
-            <p class="text-xs font-bold uppercase tracking-[0.2em] text-blue-200 mb-1">AEC Group</p>
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-blue-200 mb-1">wolan Hr</p>
             <h2 class="text-2xl font-bold">Official Offer Letter</h2>
             <p class="text-blue-200 text-sm mt-1">{{ offer.created_at|date:"F d, Y" }}</p>
         </div>
@@ -38,7 +38,7 @@
             <p>
                 Following a thorough evaluation, we are delighted to offer you the position of
                 <strong class="text-slate-900">{{ offer.designation }}</strong> within the
-                <strong class="text-slate-900">{{ offer.department }}</strong> department at AEC Group.
+                <strong class="text-slate-900">{{ offer.department }}</strong> department at wolan Hr.
             </p>
 
             <!-- Employment Details table -->

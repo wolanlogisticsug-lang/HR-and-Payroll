@@ -1,5 +1,5 @@
 """
-WSGI config for aec_hr_superapp project.
+WSGI config for wolan_hr_superapp project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'aec_hr_superapp.settings')
+# Fixed the space and casing right here:
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wolan_hr_superapp.settings')
 
 application = get_wsgi_application()

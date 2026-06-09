@@ -47,7 +47,7 @@ def ensure_daily_wishes_and_alerts():
                     sender=hr_user,
                     recipient=u,
                     subject=f"🎂 Happy Birthday, {name}!",
-                    body=f"Dear {fname},\n\nWishing you a very Happy Birthday! May your day be filled with joy and celebration.\n\nBest Wishes,\nAEC HR Team",
+                    body=f"Dear {fname},\n\nWishing you a very Happy Birthday! May your day be filled with joy and celebration.\n\nBest Wishes,\nwolan Hr HR Team",
                     mail_type='WISH',
                 )
                 
@@ -71,7 +71,7 @@ def ensure_daily_wishes_and_alerts():
                     sender=hr_user,
                     recipient=u,
                     subject=f"💐 Happy Wedding Anniversary, {name}!",
-                    body=f"Dear {fname},\n\nWishing you{spouse_part} a joyous wedding anniversary filled with wonderful memories.\n\nBest Regards,\nAEC HR Team",
+                    body=f"Dear {fname},\n\nWishing you{spouse_part} a joyous wedding anniversary filled with wonderful memories.\n\nBest Regards,\nwolan Hr HR Team",
                     mail_type='WISH',
                 )
 
@@ -84,7 +84,7 @@ def trigger_onboarding_wish(profile):
     fname = u.first_name or name
     title = f"👋 Welcome Our New Colleague: {name}!"
     dept_name = profile.department.name if profile.department else "General"
-    msg = f"We are thrilled to welcome {name} to the AEC Group as {profile.designation or 'Staff'} in the {dept_name} department! Please give them a warm welcome."
+    msg = f"We are thrilled to welcome {name} to the wolan Hr as {profile.designation or 'Staff'} in the {dept_name} department! Please give them a warm welcome."
     
     if not Notification.objects.filter(target_profile=profile, notification_type='ONBOARDING_WISH').exists():
         Notification.objects.create(
@@ -99,8 +99,8 @@ def trigger_onboarding_wish(profile):
         InternalMail.objects.create(
             sender=hr_user,
             recipient=u,
-            subject=f"🌟 Welcome to AEC Group, {name}!",
-            body=f"Dear {fname},\n\nWelcome aboard! We are excited to have you join our team. We wish you a successful and rewarding career with us.\n\nWarm Regards,\nAEC HR Team",
+            subject=f"🌟 Welcome to wolan Hr, {name}!",
+            body=f"Dear {fname},\n\nWelcome aboard! We are excited to have you join our team. We wish you a successful and rewarding career with us.\n\nWarm Regards,\nwolan Hr HR Team",
             mail_type='WISH',
         )
 
@@ -128,6 +128,6 @@ def trigger_promotion_wish(profile, new_designation):
             sender=hr_user,
             recipient=u,
             subject=f"🎉 Congratulations on your Promotion, {name}!",
-            body=f"Dear {fname},\n\nCongratulations on your well-deserved promotion to {new_designation}! Your dedication and hard work are highly appreciated.\n\nBest Regards,\nAEC HR Team",
+            body=f"Dear {fname},\n\nCongratulations on your well-deserved promotion to {new_designation}! Your dedication and hard work are highly appreciated.\n\nBest Regards,\nwolan Hr HR Team",
             mail_type='WISH',
         )

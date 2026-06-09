@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: AEC HR\n"
+"Project-Id-Version: wolan Hr HR\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-08 12:00+0530\n"
 "Language: ml\n"
@@ -164,11 +164,11 @@ msgstr "നടപടി എടുത്ത അവധി റദ്ദാക്ക
 msgid "Leave cancelled."
 msgstr "അവധി റദ്ദാക്കി."
 
-msgid "[AEC HR] Leave request — %(name)s"
-msgstr "[AEC HR] അവധി അപേക്ഷ — %(name)s"
+msgid "[wolan Hr HR] Leave request — %(name)s"
+msgstr "[wolan Hr HR] അവധി അപേക്ഷ — %(name)s"
 
-msgid "[AEC HR] Leave %(status)s"
-msgstr "[AEC HR] അവധി %(status)s"
+msgid "[wolan Hr HR] Leave %(status)s"
+msgstr "[wolan Hr HR] അവധി %(status)s"
 
 msgid "Leave %(status)s."
 msgstr "അവധി %(status)s."

@@ -11,7 +11,7 @@ class Command(BaseCommand):
     help = 'Seeds sample test data to verify automated wishes, announcements, and late warnings.'
 
     def handle(self, *args, **kwargs):
-        self.stdout.write(self.style.MIGRATE_HEADING('\n=== AEC HR Superapp — Wishes & Warnings Seeder ===\n'))
+        self.stdout.write(self.style.MIGRATE_HEADING('\n=== wolan Hr HR Superapp — Wishes & Warnings Seeder ===\n'))
         
         # Clear old wish notifications to ensure fresh names
         Notification.objects.filter(notification_type__in=['BIRTHDAY_WISH', 'ANNIVERSARY_WISH', 'ONBOARDING_WISH', 'PROMOTION_WISH']).delete()
@@ -25,13 +25,13 @@ class Command(BaseCommand):
         if len(staff_users) < 5:
             for i in range(5):
                 u, _ = User.objects.get_or_create(username=f'staff_demo_{i}', defaults={
-                    'email': f'staff_{i}@aecgroup.in',
+                    'email': f'staff_{i}@wolan Hrgroup.in',
                     'first_name': f'DemoStaff{i}',
-                    'last_name': 'AEC',
+                    'last_name': 'wolan Hr',
                     'role': 'STAFF',
                     'is_active': True,
                 })
-                dept, _ = Department.objects.get_or_create(name='AEC Cinemas')
+                dept, _ = Department.objects.get_or_create(name='wolan Hr Cinemas')
                 EmployeeProfile.objects.get_or_create(user=u, defaults={
                     'department': dept,
                     'designation': 'Executive',

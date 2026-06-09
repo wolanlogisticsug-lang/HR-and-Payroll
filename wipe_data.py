@@ -1,6 +1,6 @@
 import os
 import django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'aec_hr_superapp.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wolan Hr_hr_superapp.settings')
 django.setup()
 
 from django.apps import apps

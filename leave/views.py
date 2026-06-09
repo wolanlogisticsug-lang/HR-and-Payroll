@@ -187,7 +187,7 @@ class LeaveCreateView(LoginRequiredMixin, View):
 
         if approver_emails:
             send_html_mail(
-                subject=_("[AEC HR] Leave request — %(name)s") % {
+                subject=_("[wolan Hr HR] Leave request — %(name)s") % {
                     'name': profile.user.get_full_name()},
                 template_name='email/leave_request.html',
                 context={'leave': leave, 'profile': profile},
@@ -238,7 +238,7 @@ class LeaveDecisionView(HROrMDMixin, View):
             )
             if target.email:
                 send_html_mail(
-                    subject=_("[AEC HR] Leave needs your review — %(name)s") % {
+                    subject=_("[wolan Hr HR] Leave needs your review — %(name)s") % {
                         'name': leave.profile.user.get_full_name()},
                     template_name='email/leave_request.html',
                     context={'leave': leave, 'profile': leave.profile},
@@ -263,7 +263,7 @@ class LeaveDecisionView(HROrMDMixin, View):
         # Notify employee
         if leave.profile.user.email:
             send_html_mail(
-                subject=_("[AEC HR] Leave %(status)s") % {'status': leave.get_status_display()},
+                subject=_("[wolan Hr HR] Leave %(status)s") % {'status': leave.get_status_display()},
                 template_name='email/leave_decision.html',
                 context={'leave': leave},
                 to=[leave.profile.user.email],

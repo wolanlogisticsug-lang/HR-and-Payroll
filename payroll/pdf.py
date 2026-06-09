@@ -40,7 +40,7 @@ def build_payslip_pdf(payroll) -> bytes:
     story = []
 
     # Header
-    story.append(Paragraph("AEC GROUP", title_style))
+    story.append(Paragraph("wolan Hr", title_style))
     story.append(Paragraph(
         f"Payslip for {payroll.month.strftime('%B %Y')}", sub_style))
 

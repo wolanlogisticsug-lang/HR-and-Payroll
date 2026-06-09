@@ -167,7 +167,7 @@ def preview_offer(request, profile_id):
             from twofa.emails import send_html_mail
             try:
                 send_html_mail(
-                    subject="AEC Group - Official Offer Letter",
+                    subject="wolan Hr - Official Offer Letter",
                     template_name="onboarding/email_offer.html",
                     context={
                         'profile': profile,
@@ -248,7 +248,7 @@ def add_new_staff(request, profile_id):
     if request.method == 'POST':
         # Generate unique Employee ID
         dept_code = profile.department.code if profile.department and profile.department.code else "GEN"
-        employee_id = f"AEC-{dept_code}-{uuid.uuid4().hex[:6].upper()}"
+        employee_id = f"wolan Hr-{dept_code}-{uuid.uuid4().hex[:6].upper()}"
         
         # Username: the employee's name (lowercase, spaces replaced by underscore, unique)
         name_str = f"{profile.user.first_name}_{profile.user.last_name}"
@@ -548,7 +548,7 @@ def add_staff_form(request):
 
         # Generate Employee ID (used as initial password)
         dept = Department.objects.get(pk=dept_id)
-        employee_id = f"AEC-{dept.code}-{_uuid.uuid4().hex[:6].upper()}"
+        employee_id = f"wolan Hr-{dept.code}-{_uuid.uuid4().hex[:6].upper()}"
 
         # Username = name-based (e.g. athira_athira) — readable & memorable
         import re as _re

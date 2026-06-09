@@ -1,5 +1,5 @@
 """
-AEC HR Super App — Admin Configuration
+wolan Hr HR Super App — Admin Configuration
 """
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
@@ -13,7 +13,7 @@ class UserAdmin(DefaultUserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff')
     list_filter = ('role', 'is_staff', 'is_active')
     fieldsets = DefaultUserAdmin.fieldsets + (
-        ('AEC Custom Fields', {'fields': ('role', 'phone', 'date_of_birth', 'profile_picture')}),
+        ('wolan Hr Custom Fields', {'fields': ('role', 'phone', 'date_of_birth', 'profile_picture')}),
     )
 
 @admin.register(Department)

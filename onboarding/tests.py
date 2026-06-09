@@ -9,19 +9,19 @@ class MDOnboardingPermissionsTest(TestCase):
         self.md_user = User.objects.create_user(
             username='md_user',
             password='testpassword',
-            email='md@aec.com',
+            email='md@wolan Hr.com',
             role=User.Role.MD
         )
         self.hr_user = User.objects.create_user(
             username='hr_user',
             password='testpassword',
-            email='hr@aec.com',
+            email='hr@wolan Hr.com',
             role=User.Role.HR
         )
         self.staff_user = User.objects.create_user(
             username='staff_user',
             password='testpassword',
-            email='staff@aec.com',
+            email='staff@wolan Hr.com',
             role=User.Role.STAFF
         )
 
